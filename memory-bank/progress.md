@@ -10,6 +10,7 @@
   - Project initialization.
   - Backend Setup (Schema & Basic CRUD): [Completed]
   - Frontend Add Album Form: [Completed]
+  - UI Template Refactoring (Sidebar & Branding): [Completed]
   - List View: [Pending]
   - Edit/Delete Actions: [Pending]
 

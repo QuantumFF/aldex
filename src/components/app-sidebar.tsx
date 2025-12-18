@@ -1,22 +1,17 @@
 "use client";
 
 import {
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
-  Settings2,
-  SquareTerminal,
+  Check,
+  Disc,
+  Heart,
+  Library,
+  List,
+  Play,
+  Plus,
 } from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -30,124 +25,45 @@ import {
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Aldex User",
+    email: "user@example.com",
+    avatar: "",
   },
-  navMain: [
+  collection: [
     {
-      title: "Playground",
+      title: "Library",
       url: "#",
-      icon: SquareTerminal,
+      icon: Library,
       isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
     },
     {
-      title: "Models",
+      title: "Wishlist",
       url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
+      icon: Heart,
     },
   ],
-  navSecondary: [
+  progress: [
     {
-      title: "Support",
+      title: "Backlog",
       url: "#",
-      icon: LifeBuoy,
+      icon: List,
     },
     {
-      title: "Feedback",
+      title: "Active",
       url: "#",
-      icon: Send,
+      icon: Play,
+    },
+    {
+      title: "Completed",
+      url: "#",
+      icon: Check,
     },
   ],
-  projects: [
+  manage: [
     {
-      name: "Design Engineering",
+      title: "Add Album",
       url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      icon: Plus,
     },
   ],
 };
@@ -161,11 +77,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+                  <Disc className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-medium">Aldex</span>
+                  <span className="truncate text-xs">Personal Music Tracker</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -173,9 +89,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={data.collection} label="Collection" />
+        <NavMain items={data.progress} label="Progress" />
+        <NavMain items={data.manage} label="Manage" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
