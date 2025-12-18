@@ -18,35 +18,45 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import type { DashboardView } from "@/app/dashboard/page";
 
 export function NavMain({
   items,
   label = "Platform",
+  onNavigate,
+  activeView,
 }: {
   items: {
     title: string;
-    url: string;
+    id: DashboardView;
     icon: LucideIcon;
     isActive?: boolean;
     items?: {
       title: string;
-      url: string;
+      id: DashboardView;
     }[];
   }[];
   label?: string;
+  onNavigate: (view: DashboardView) => void;
+  activeView: DashboardView;
 }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
+          <Collapsible key={item.title} asChild defaultOpen={item.isActive || activeView === item.id}>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <a href={item.url}>
+              <SidebarMenuButton 
+                asChild 
+                tooltip={item.title}
+                isActive={activeView === item.id}
+                onClick={() => onNavigate(item.id)}
+              >
+                <button>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </button>
               </SidebarMenuButton>
               {item.items?.length ? (
                 <>
@@ -60,10 +70,14 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
-                            <a href={subItem.url}>
+                          <SidebarMenuSubButton 
+                            asChild
+                            isActive={activeView === subItem.id}
+                            onClick={() => onNavigate(subItem.id)}
+                          >
+                            <button>
                               <span>{subItem.title}</span>
-                            </a>
+                            </button>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}

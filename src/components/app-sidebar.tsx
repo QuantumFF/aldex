@@ -22,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import type { DashboardView } from "@/app/dashboard/page";
 
 const data = {
   user: {
@@ -32,50 +33,54 @@ const data = {
   collection: [
     {
       title: "Library",
-      url: "#",
+      id: "library" as DashboardView,
       icon: Library,
-      isActive: true,
     },
     {
       title: "Wishlist",
-      url: "#",
+      id: "wishlist" as DashboardView,
       icon: Heart,
     },
   ],
   progress: [
     {
       title: "Backlog",
-      url: "#",
+      id: "backlog" as DashboardView,
       icon: List,
     },
     {
       title: "Active",
-      url: "#",
+      id: "active" as DashboardView,
       icon: Play,
     },
     {
       title: "Completed",
-      url: "#",
+      id: "completed" as DashboardView,
       icon: Check,
     },
   ],
   manage: [
     {
       title: "Add Album",
-      url: "#",
+      id: "add-album" as DashboardView,
       icon: Plus,
     },
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  onNavigate: (view: DashboardView) => void;
+  activeView: DashboardView;
+}
+
+export function AppSidebar({ onNavigate, activeView, ...props }: AppSidebarProps) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <button onClick={() => onNavigate("library")}>
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Disc className="size-4" />
                 </div>
@@ -83,15 +88,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-medium">Aldex</span>
                   <span className="truncate text-xs">Personal Music Tracker</span>
                 </div>
-              </a>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.collection} label="Collection" />
-        <NavMain items={data.progress} label="Progress" />
-        <NavMain items={data.manage} label="Manage" />
+        <NavMain items={data.collection} label="Collection" onNavigate={onNavigate} activeView={activeView} />
+        <NavMain items={data.progress} label="Progress" onNavigate={onNavigate} activeView={activeView} />
+        <NavMain items={data.manage} label="Manage" onNavigate={onNavigate} activeView={activeView} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

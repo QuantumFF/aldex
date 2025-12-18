@@ -11,7 +11,8 @@
   - Backend Setup (Schema & Basic CRUD): [Completed]
   - Frontend Add Album Form: [Completed]
   - UI Template Refactoring (Sidebar & Branding): [Completed]
-  - List View: [Pending]
+  - List View (Grid/Table with filtering): [Completed]
+  - Basic Dashboard Routing: [Completed]
   - Edit/Delete Actions: [Pending]
 
 ## Known Issues / Constraints

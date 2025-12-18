@@ -3,7 +3,7 @@
 ## Core Stack
 
 - **Runtime:** Bun
-- **Package Manager:** Bun
+- **Package Manager:** Bun (Always use `bun install`, `bun run`, `bunx` instead of `npm`/`npx`)
 - **Language:** TypeScript
 - **Build Tool:** Vite
 - **Backend/Database:** Convex (BaaS)

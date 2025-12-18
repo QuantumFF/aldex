@@ -1,20 +1,38 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Get all albums, optionally filtered by acquisition status
+// Get all albums, optionally filtered by acquisition status or progress
 export const get = query({
   args: {
     acquisition: v.optional(v.union(v.literal("wishlist"), v.literal("library"))),
+    progress: v.optional(v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))),
   },
   handler: async (ctx, args) => {
-    const { acquisition } = args;
-    if (acquisition) {
-      return await ctx.db
-        .query("albums")
-        .withIndex("by_acquisition", (q) => q.eq("acquisition", acquisition))
-        .collect();
-    }
-    return await ctx.db.query("albums").collect();
+    const { acquisition, progress } = args;
+    const albums = await (async () => {
+      if (progress) {
+        return await ctx.db
+          .query("albums")
+          .withIndex("by_progress", (q) => q.eq("progress", progress))
+          .collect();
+      }
+      if (acquisition) {
+        return await ctx.db
+          .query("albums")
+          .withIndex("by_acquisition", (q) => q.eq("acquisition", acquisition))
+          .collect();
+      }
+      return await ctx.db.query("albums").collect();
+    })();
+
+    return Promise.all(
+      albums.map(async (album) => ({
+        ...album,
+        coverImageUrl: album.coverImageId
+          ? await ctx.storage.getUrl(album.coverImageId)
+          : null,
+      }))
+    );
   },
 });
 
