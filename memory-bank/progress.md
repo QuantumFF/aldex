@@ -13,6 +13,7 @@
   - UI Template Refactoring (Sidebar & Branding): [Completed]
   - List View (Grid/Table with filtering): [Completed]
   - Basic Dashboard Routing: [Completed]
+  - Search & Filter (Client-side): [Completed]
   - Edit/Delete Actions: [Pending]
 
 ## Known Issues / Constraints

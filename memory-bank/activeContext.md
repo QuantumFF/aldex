@@ -13,6 +13,7 @@ We are setting up the project foundation and the ability to add albums.
 4. **Schema Logic:** Split state into `acquisition` (Wishlist/Library) and `progress` (Backlog/Active/Completed) to enforce mutually exclusive logic while allowing flexible tagging.
 5. **UI Refactoring:** Modified shadcn `sidebar-06` template to fit Aldex structure (Collection/Progress/Manage sections). Removed unused components.
 6. **Routing:** Implemented basic state-based routing in the dashboard to switch between Library, Wishlist, and Progress views.
+7. **Filtering:** Implemented client-side filtering for Search, Acquisition, and Progress within the Library view, allowing flexible exploration of the collection.
 
 ## Development Preferences
 
@@ -21,6 +22,5 @@ We are setting up the project foundation and the ability to add albums.
 ## Next Steps
 
 1. Implement Edit/Delete functionality for albums.
-2. Implement Search and Filter within the Library view.
-3. Set up TanStack Router for more robust URL-based routing.
-4. Polish UI and UX.
+2. Set up TanStack Router for more robust URL-based routing.
+3. Polish UI and UX.
