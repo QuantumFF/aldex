@@ -8,8 +8,9 @@
   - Schema strategy decided.
 - **Sprint 1 (Core Functionality):** [In Progress]
   - Project initialization.
-  - Basic CRUD.
-  - List View.
+  - Backend Setup (Schema & Basic CRUD): [Completed]
+  - Frontend CRUD (Forms & Views): [Pending]
+  - List View: [Pending]
 
 ## Known Issues / Constraints
 

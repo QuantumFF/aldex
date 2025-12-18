@@ -2,7 +2,8 @@
 
 ## Core Stack
 
-- **Runtime:** Node.js / Browser
+- **Runtime:** Bun
+- **Package Manager:** Bun
 - **Language:** TypeScript
 - **Build Tool:** Vite
 - **Backend/Database:** Convex (BaaS)
