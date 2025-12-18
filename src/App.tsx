@@ -1,7 +1,12 @@
-import { ComponentExample } from "@/components/component-example";
+import Page from "@/app/dashboard/page";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export function App() {
-return <ComponentExample />;
+  return (
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Page />
+    </ThemeProvider>
+  );
 }
 
 export default App;
