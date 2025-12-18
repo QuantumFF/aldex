@@ -14,6 +14,6 @@ We are setting up the project foundation and the ability to add albums.
 
 ## Next Steps
 
-1. User to run `bun run convex` to initialize the backend dev server.
-2. Generate `AddAlbumForm` component with Zod validation and MusicBrainz integration.
-3. Create the Albums List View.
+1. Create the Albums List View (Grid/Table with filters).
+2. Implement Edit/Delete functionality.
+3. Polish UI and UX.

@@ -9,8 +9,9 @@
 - **Sprint 1 (Core Functionality):** [In Progress]
   - Project initialization.
   - Backend Setup (Schema & Basic CRUD): [Completed]
-  - Frontend CRUD (Forms & Views): [Pending]
+  - Frontend Add Album Form: [Completed]
   - List View: [Pending]
+  - Edit/Delete Actions: [Pending]
 
 ## Known Issues / Constraints
 
