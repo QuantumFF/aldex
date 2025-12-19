@@ -14,6 +14,7 @@ We are setting up the project foundation and the ability to add albums.
 5. **UI Refactoring:** Modified shadcn `sidebar-06` template to fit Aldex structure (Collection/Progress/Manage sections). Removed unused components.
 6. **Routing:** Implemented basic state-based routing in the dashboard to switch between Library, Wishlist, and Progress views.
 7. **Filtering:** Implemented client-side filtering for Search, Acquisition, and Progress within the Library view, allowing flexible exploration of the collection.
+8. **Edit/Delete UI:** Implemented `EditAlbumDialog` using shadcn/ui `Dialog` component (centered modal) instead of a `Sheet` (side panel) for better focus during editing.
 
 ## Development Preferences
 
@@ -21,6 +22,5 @@ We are setting up the project foundation and the ability to add albums.
 
 ## Next Steps
 
-1. Implement Edit/Delete functionality for albums.
-2. Set up TanStack Router for more robust URL-based routing.
-3. Polish UI and UX.
+1. Set up TanStack Router for more robust URL-based routing.
+2. Polish UI and UX.

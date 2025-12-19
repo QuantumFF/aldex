@@ -14,7 +14,7 @@
   - List View (Grid/Table with filtering): [Completed]
   - Basic Dashboard Routing: [Completed]
   - Search & Filter (Client-side): [Completed]
-  - Edit/Delete Actions: [Pending]
+  - Edit/Delete Actions: [Completed]
 
 ## Known Issues / Constraints
 

@@ -1,9 +1,17 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { useState, useEffect, useMemo } from "react";
-import { LayoutGrid, List, Search, X } from "lucide-react";
+import type { DashboardView } from "@/app/dashboard/page";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -13,18 +21,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import type { DashboardView } from "@/app/dashboard/page";
+import { useQuery } from "convex/react";
+import { LayoutGrid, List, Search, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { api } from "../../convex/_generated/api";
+import { EditAlbumDialog, type AlbumWithCover } from "./edit-album-dialog";
 
 interface AlbumLibraryProps {
   type: DashboardView;
@@ -33,9 +34,11 @@ interface AlbumLibraryProps {
 export function AlbumLibrary({ type }: AlbumLibraryProps) {
   // Fetch ALL albums
   const allAlbums = useQuery(api.albums.get, {});
-  
+
   const [view, setView] = useState<"grid" | "list">("grid");
-  
+  const [editingAlbum, setEditingAlbum] = useState<AlbumWithCover | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [acquisitionFilter, setAcquisitionFilter] = useState<string>("all");
@@ -85,7 +88,10 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
       }
 
       // 2. Acquisition Filter
-      if (acquisitionFilter !== "all" && album.acquisition !== acquisitionFilter) {
+      if (
+        acquisitionFilter !== "all" &&
+        album.acquisition !== acquisitionFilter
+      ) {
         return false;
       }
 
@@ -108,24 +114,37 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
   };
 
   const getTitle = () => {
-    if (searchQuery || acquisitionFilter !== "all" || progressFilter !== "all") {
+    if (
+      searchQuery ||
+      acquisitionFilter !== "all" ||
+      progressFilter !== "all"
+    ) {
       return `Albums (${filteredAlbums.length})`;
     }
     return "All Albums";
   };
 
+  const handleEditAlbum = (album: AlbumWithCover) => {
+    setEditingAlbum(album);
+    setIsEditOpen(true);
+  };
+
   if (allAlbums === undefined) {
-    return <div className="flex h-40 items-center justify-center">Loading albums...</div>;
+    return (
+      <div className="flex h-40 items-center justify-center">
+        Loading albums...
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <h2 className="text-2xl font-bold tracking-tight">{getTitle()}</h2>
-        
+
         <div className="flex flex-1 flex-col gap-2 md:flex-row md:items-center md:justify-end">
-           {/* Search Input */}
-           <div className="relative w-full md:max-w-xs">
+          {/* Search Input */}
+          <div className="relative w-full md:max-w-xs">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search title or artist..."
@@ -137,7 +156,10 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
 
           {/* Filters */}
           <div className="flex gap-2">
-            <Select value={acquisitionFilter} onValueChange={setAcquisitionFilter}>
+            <Select
+              value={acquisitionFilter}
+              onValueChange={setAcquisitionFilter}
+            >
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -160,10 +182,17 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
               </SelectContent>
             </Select>
 
-            {(searchQuery || acquisitionFilter !== "all" || progressFilter !== "all") && (
-               <Button variant="ghost" size="icon" onClick={clearFilters} title="Clear Filters">
-                 <X className="h-4 w-4" />
-               </Button>
+            {(searchQuery ||
+              acquisitionFilter !== "all" ||
+              progressFilter !== "all") && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={clearFilters}
+                title="Clear Filters"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             )}
           </div>
 
@@ -174,10 +203,18 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
             onValueChange={(v) => v && setView(v as "grid" | "list")}
             className="border rounded-md p-1"
           >
-            <ToggleGroupItem value="grid" aria-label="Grid view" className="h-7 w-7 p-0">
+            <ToggleGroupItem
+              value="grid"
+              aria-label="Grid view"
+              className="h-7 w-7 p-0"
+            >
               <LayoutGrid className="h-4 w-4" />
             </ToggleGroupItem>
-            <ToggleGroupItem value="list" aria-label="List view" className="h-7 w-7 p-0">
+            <ToggleGroupItem
+              value="list"
+              aria-label="List view"
+              className="h-7 w-7 p-0"
+            >
               <List className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>
@@ -186,13 +223,21 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
 
       {filteredAlbums.length === 0 ? (
         <div className="flex h-60 flex-col items-center justify-center gap-2 rounded-md border border-dashed">
-          <p className="text-muted-foreground text-lg">No albums match your filters.</p>
-          <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
+          <p className="text-muted-foreground text-lg">
+            No albums match your filters.
+          </p>
+          <Button variant="outline" onClick={clearFilters}>
+            Clear Filters
+          </Button>
         </div>
       ) : view === "grid" ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredAlbums.map((album) => (
-            <Card key={album._id} className="overflow-hidden p-0">
+            <Card
+              key={album._id}
+              className="overflow-hidden p-0 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+              onClick={() => handleEditAlbum(album)}
+            >
               <CardContent className="p-0">
                 <div className="group relative aspect-square overflow-hidden bg-muted">
                   {album.coverImageUrl ? (
@@ -214,16 +259,23 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
                     </div>
                   )}
                   <div className="absolute bottom-2 left-2 flex gap-1">
-                     {album.progress && (
-                        <Badge variant="default" className="text-[10px] h-5 capitalize opacity-90 shadow-sm">
-                          {album.progress}
-                        </Badge>
-                     )}
+                    {album.progress && (
+                      <Badge
+                        variant="default"
+                        className="text-[10px] h-5 capitalize opacity-90 shadow-sm"
+                      >
+                        {album.progress}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <div className="p-3 space-y-1">
-                  <h3 className="line-clamp-1 text-sm font-semibold leading-tight">{album.title}</h3>
-                  <p className="line-clamp-1 text-muted-foreground text-xs">{album.artist}</p>
+                  <h3 className="line-clamp-1 text-sm font-semibold leading-tight">
+                    {album.title}
+                  </h3>
+                  <p className="line-clamp-1 text-muted-foreground text-xs">
+                    {album.artist}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -245,7 +297,11 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
             </TableHeader>
             <TableBody>
               {filteredAlbums.map((album) => (
-                <TableRow key={album._id}>
+                <TableRow
+                  key={album._id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleEditAlbum(album)}
+                >
                   <TableCell>
                     <div className="h-10 w-10 overflow-hidden rounded bg-muted">
                       {album.coverImageUrl ? (
@@ -268,9 +324,9 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
                     )}
                   </TableCell>
                   <TableCell>
-                      <Badge variant="secondary" className="capitalize">
-                        {album.acquisition}
-                      </Badge>
+                    <Badge variant="secondary" className="capitalize">
+                      {album.acquisition}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     {album.progress ? (
@@ -287,6 +343,12 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
           </Table>
         </div>
       )}
+
+      <EditAlbumDialog
+        album={editingAlbum}
+        isOpen={isEditOpen}
+        onOpenChange={setIsEditOpen}
+      />
     </div>
   );
 }
