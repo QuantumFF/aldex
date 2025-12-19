@@ -22,8 +22,9 @@ import {
   searchAlbums,
   type MusicBrainzReleaseGroup,
 } from "@/lib/musicbrainz";
+import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
-import { Disc, Loader2 } from "lucide-react";
+import { Disc, Loader2, Search } from "lucide-react";
 import * as React from "react";
 import { api } from "../../convex/_generated/api";
 
@@ -139,12 +140,15 @@ export function AddAlbumCommand() {
     <>
       <Button
         variant="outline"
-        className="relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64"
+        className={cn(
+          "relative h-9 w-9 p-0 md:h-9 md:w-40 md:justify-start md:px-3 md:py-2 lg:w-64",
+          "text-sm text-muted-foreground"
+        )}
         onClick={() => setOpen(true)}
       >
-        <span className="hidden lg:inline-flex">Search albums...</span>
-        <span className="inline-flex lg:hidden">Search...</span>
-        <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+        <Search className="h-4 w-4 md:mr-2" />
+        <span className="hidden md:inline-flex">Search albums...</span>
+        <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </Button>
