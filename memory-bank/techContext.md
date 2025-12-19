@@ -17,6 +17,7 @@
 - `zod`: Schema validation.
 - `@tanstack/react-router`: Routing.
 - `lucide-react`: Icons.
+- `cmdk`: Command palette component (used for "Add Album" search).
 
 ## External APIs
 

@@ -18,7 +18,7 @@ import { useQuery } from "convex/react";
 import { LayoutGrid, List, Minus, Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { AddAlbumDialog } from "./add-album-dialog";
+import { AddAlbumCommand } from "./add-album-command";
 import { EditAlbumDialog, type AlbumWithCover } from "./edit-album-dialog";
 
 export function AlbumLibrary() {
@@ -248,7 +248,7 @@ export function AlbumLibrary() {
               </ToggleGroupItem>
             </ToggleGroup>
 
-            <AddAlbumDialog />
+            <AddAlbumCommand />
           </div>
         </div>
       </div>

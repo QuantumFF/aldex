@@ -13,7 +13,7 @@ We are refining the core user interface to be more minimalist and album-centric.
 4. **Schema Logic:** Split state into `acquisition` (Wishlist/Library) and `progress` (Backlog/Active/Completed) to enforce mutually exclusive logic while allowing flexible tagging.
 5. **UI Redesign:** Removed the sidebar navigation in favor of a single, filterable **Album Library** view. This aligns with the "minimalist" goal.
 6. **Dashboard Layout:** The main dashboard now features a dynamic grid with user-selectable column count (2-10 columns) to optimize screen real estate.
-7. **Add Album Workflow:** Moved "Add Album" from a separate page to a modal dialog (`AddAlbumDialog`) accessible directly from the library view.
+7. **Add Album Workflow:** Replaced the standard modal with a **Command Palette** (`Cmd+K` style) interface. This allows for faster, keyboard-centric album addition with live MusicBrainz search, album art preview, and an optional edit step.
 8. **Filtering:** Navigation between "Library", "Wishlist", etc., is now handled entirely by client-side filters within the main view.
 9. **UI Polish:** Switched to `NativeSelect` for library filters ("Status", "Progress") to prevent overflow and ensure better mobile/desktop compatibility.
 10. **Column Control:** Replaced the dropdown selector for column count with `+` and `-` buttons. This makes the resizing action more intuitive and accessible.

@@ -1,0 +1,298 @@
+"use client";
+
+import { AddAlbumForm } from "@/components/add-album-form";
+import { Button } from "@/components/ui/button";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  getAlbumCover,
+  searchAlbums,
+  type MusicBrainzReleaseGroup,
+} from "@/lib/musicbrainz";
+import { useMutation } from "convex/react";
+import { Disc, Loader2 } from "lucide-react";
+import * as React from "react";
+import { api } from "../../convex/_generated/api";
+
+export function AddAlbumCommand() {
+  const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+  const [results, setResults] = React.useState<MusicBrainzReleaseGroup[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [selectedAlbum, setSelectedAlbum] =
+    React.useState<MusicBrainzReleaseGroup | null>(null);
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [coverUrl, setCoverUrl] = React.useState<string | null>(null);
+  const [adding, setAdding] = React.useState(false);
+
+  const createAlbum = useMutation(api.albums.create);
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  React.useEffect(() => {
+    if (!query) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const data = await searchAlbums(query);
+        setResults(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSelect = async (album: MusicBrainzReleaseGroup) => {
+    setSelectedAlbum(album);
+    setOpen(false);
+    setConfirmOpen(true);
+
+    // Fetch cover art
+    const cover = await getAlbumCover(album.id);
+    setCoverUrl(cover);
+  };
+
+  const handleAdd = async (acquisition: "library" | "wishlist") => {
+    if (!selectedAlbum) return;
+    setAdding(true);
+
+    try {
+      let coverImageId = undefined;
+
+      if (coverUrl) {
+        try {
+          const response = await fetch(coverUrl);
+          const blob = await response.blob();
+          const uploadUrl = await generateUploadUrl();
+
+          const result = await fetch(uploadUrl, {
+            method: "POST",
+            headers: { "Content-Type": blob.type },
+            body: blob,
+          });
+
+          const { storageId } = await result.json();
+          coverImageId = storageId;
+        } catch (e) {
+          console.error("Failed to upload image", e);
+        }
+      }
+
+      await createAlbum({
+        title: selectedAlbum.title,
+        artist: selectedAlbum["artist-credit"]?.[0]?.name || "",
+        releaseYear: selectedAlbum["first-release-date"]
+          ? parseInt(selectedAlbum["first-release-date"].split("-")[0])
+          : undefined,
+        acquisition,
+        progress: acquisition === "library" ? "backlog" : undefined,
+        isArchived: false,
+        musicBrainzId: selectedAlbum.id,
+        coverImageId,
+      });
+
+      setConfirmOpen(false);
+      setSelectedAlbum(null);
+      setCoverUrl(null);
+    } catch (error) {
+      console.error("Failed to add album", error);
+      alert("Failed to add album");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        className="relative h-9 w-full justify-start rounded-[0.5rem] text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64"
+        onClick={() => setOpen(true)}
+      >
+        <span className="hidden lg:inline-flex">Search albums...</span>
+        <span className="inline-flex lg:hidden">Search...</span>
+        <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <span className="text-xs">⌘</span>K
+        </kbd>
+      </Button>
+
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        commandProps={{ shouldFilter: false }}
+      >
+        <CommandInput
+          placeholder="Search albums..."
+          value={query}
+          onValueChange={setQuery}
+        />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          {loading && (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              Searching...
+            </div>
+          )}
+          {!loading && results.length > 0 && (
+            <CommandGroup heading="Suggestions">
+              {results.map((album) => (
+                <CommandItem
+                  key={album.id}
+                  value={album.id}
+                  onSelect={() => handleSelect(album)}
+                >
+                  <Disc className="mr-2 h-4 w-4" />
+                  <div className="flex flex-col">
+                    <span>{album.title}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {album["artist-credit"]?.[0]?.name} (
+                      {album["first-release-date"]?.split("-")[0]})
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+        </CommandList>
+      </CommandDialog>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Album</DialogTitle>
+          </DialogHeader>
+          {selectedAlbum && (
+            <div className="grid gap-4 py-4">
+              <div className="flex items-start gap-4">
+                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
+                  {coverUrl ? (
+                    <img
+                      src={coverUrl}
+                      alt={selectedAlbum.title}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <Disc className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+                <div className="grid gap-1">
+                  <h3 className="font-semibold leading-none tracking-tight">
+                    {selectedAlbum.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedAlbum["artist-credit"]?.[0]?.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedAlbum["first-release-date"]?.split("-")[0]}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <div className="flex gap-2 w-full">
+              <Button
+                className="flex-1"
+                onClick={() => handleAdd("library")}
+                disabled={adding}
+              >
+                {adding ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Add to Library
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex-1"
+                onClick={() => handleAdd("wishlist")}
+                disabled={adding}
+              >
+                Add to Wishlist
+              </Button>
+            </div>
+            <div className="flex gap-2 w-full">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setConfirmOpen(false);
+                  setEditOpen(true);
+                }}
+              >
+                Edit Details
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={() => setConfirmOpen(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit & Add Album</DialogTitle>
+          </DialogHeader>
+          {selectedAlbum && (
+            <AddAlbumForm
+              initialData={{
+                title: selectedAlbum.title,
+                artist: selectedAlbum["artist-credit"]?.[0]?.name || "",
+                releaseYear: selectedAlbum["first-release-date"]
+                  ? parseInt(selectedAlbum["first-release-date"].split("-")[0])
+                  : undefined,
+                musicBrainzId: selectedAlbum.id,
+                coverUrl: coverUrl || "",
+              }}
+              onSuccess={() => {
+                setEditOpen(false);
+                setSelectedAlbum(null);
+                setCoverUrl(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
