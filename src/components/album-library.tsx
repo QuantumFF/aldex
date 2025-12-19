@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -21,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useQuery } from "convex/react";
-import { LayoutGrid, List, Minus, Plus, Search, X } from "lucide-react";
+import { LayoutGrid, List, Minus, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { AddAlbumDialog } from "./add-album-dialog";
@@ -67,7 +60,7 @@ export function AlbumLibrary() {
         // If filtering by progress, we implicitly require acquisition to be 'library' usually,
         // but the schema says 'progress' is optional.
         // If album doesn't have progress, it shouldn't match a specific progress filter.
-        if (album.progress !== progressFilter) return false;
+        if (!album.progress || album.progress !== progressFilter) return false;
       }
 
       return true;
@@ -122,45 +115,43 @@ export function AlbumLibrary() {
           </div>
 
           {/* Filters */}
-          <div className="flex gap-2">
-            <Select
+          <div className="flex flex-wrap gap-2">
+            <ToggleGroup
+              type="single"
               value={acquisitionFilter}
-              onValueChange={setAcquisitionFilter}
+              onValueChange={(value) => setAcquisitionFilter(value || "all")}
+              className="border rounded-md p-1 bg-background"
             >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent className="w-[120px] min-w-0">
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="library">Library</SelectItem>
-                <SelectItem value="wishlist">Wishlist</SelectItem>
-              </SelectContent>
-            </Select>
+              <ToggleGroupItem value="all" className="h-7 px-3 text-xs">
+                All
+              </ToggleGroupItem>
+              <ToggleGroupItem value="library" className="h-7 px-3 text-xs">
+                Library
+              </ToggleGroupItem>
+              <ToggleGroupItem value="wishlist" className="h-7 px-3 text-xs">
+                Wishlist
+              </ToggleGroupItem>
+            </ToggleGroup>
 
-            <Select value={progressFilter} onValueChange={setProgressFilter}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="Progress" />
-              </SelectTrigger>
-              <SelectContent className="w-[130px] min-w-0">
-                <SelectItem value="all">All Progress</SelectItem>
-                <SelectItem value="backlog">Backlog</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {(searchQuery ||
-              acquisitionFilter !== "all" ||
-              progressFilter !== "all") && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={clearFilters}
-                title="Clear Filters"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
+            <ToggleGroup
+              type="single"
+              value={progressFilter}
+              onValueChange={(value) => setProgressFilter(value || "all")}
+              className="border rounded-md p-1 bg-background"
+            >
+              <ToggleGroupItem value="all" className="h-7 px-3 text-xs">
+                All
+              </ToggleGroupItem>
+              <ToggleGroupItem value="backlog" className="h-7 px-3 text-xs">
+                Backlog
+              </ToggleGroupItem>
+              <ToggleGroupItem value="active" className="h-7 px-3 text-xs">
+                Active
+              </ToggleGroupItem>
+              <ToggleGroupItem value="completed" className="h-7 px-3 text-xs">
+                Completed
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
           {/* View Toggle */}
@@ -268,6 +259,12 @@ export function AlbumLibrary() {
                     </div>
                   )}
                   <div className="absolute bottom-2 left-2 flex gap-1">
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] h-5 capitalize opacity-90 shadow-sm"
+                    >
+                      {album.acquisition}
+                    </Badge>
                     {album.progress && (
                       <Badge
                         variant="default"
