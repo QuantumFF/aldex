@@ -18,6 +18,7 @@ We are refining the core user interface to be more minimalist and album-centric.
 9. **UI Polish:** Switched to `NativeSelect` for library filters ("Status", "Progress") to prevent overflow and ensure better mobile/desktop compatibility.
 10. **Column Control:** Replaced the dropdown selector for column count with `+` and `-` buttons. This makes the resizing action more intuitive and accessible.
 11. **Implicit Backlog Status:** Fixed logic to treat albums in `Library` with undefined `progress` as implicitly `Backlog` for filtering and display purposes.
+12. **Responsive Columns:** Implemented automatic adjustment of grid column count based on window width for better responsiveness.
 
 ## Development Preferences
 

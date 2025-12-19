@@ -13,9 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useWindowSize } from "@/hooks/use-window-size";
 import { useQuery } from "convex/react";
 import { LayoutGrid, List, Minus, Plus, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { AddAlbumDialog } from "./add-album-dialog";
 import { EditAlbumDialog, type AlbumWithCover } from "./edit-album-dialog";
@@ -26,6 +27,26 @@ export function AlbumLibrary() {
 
   const [view, setView] = useState<"grid" | "list">("grid");
   const [columnCount, setColumnCount] = useState(5);
+  const { width } = useWindowSize();
+
+  // Auto-adjust columns based on width
+  useEffect(() => {
+    if (!width) return;
+    let newCount = 5;
+    if (width < 640)
+      newCount = 2; // Mobile
+    else if (width < 768)
+      newCount = 3; // Tablet
+    else if (width < 1024)
+      newCount = 4; // Small Desktop
+    else if (width < 1280)
+      newCount = 5; // Desktop
+    else newCount = 6; // Large Desktop
+
+    // eslint-disable-next-line
+    setColumnCount(newCount);
+  }, [width]);
+
   const [editingAlbum, setEditingAlbum] = useState<AlbumWithCover | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
