@@ -15,6 +15,7 @@ We are refining the core user interface to be more minimalist and album-centric.
 6. **Dashboard Layout:** The main dashboard now features a dynamic grid with user-selectable column count (2-10 columns) to optimize screen real estate.
 7. **Add Album Workflow:** Moved "Add Album" from a separate page to a modal dialog (`AddAlbumDialog`) accessible directly from the library view.
 8. **Filtering:** Navigation between "Library", "Wishlist", etc., is now handled entirely by client-side filters within the main view.
+9. **UI Polish:** Switched to `NativeSelect` for library filters ("Status", "Progress") to prevent overflow and ensure better mobile/desktop compatibility.
 
 ## Development Preferences
 

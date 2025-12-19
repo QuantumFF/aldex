@@ -130,7 +130,7 @@ export function AlbumLibrary() {
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-[120px] min-w-0">
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="library">Library</SelectItem>
                 <SelectItem value="wishlist">Wishlist</SelectItem>
@@ -141,7 +141,7 @@ export function AlbumLibrary() {
               <SelectTrigger className="w-[130px]">
                 <SelectValue placeholder="Progress" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-[130px] min-w-0">
                 <SelectItem value="all">All Progress</SelectItem>
                 <SelectItem value="backlog">Backlog</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
