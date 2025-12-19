@@ -156,14 +156,7 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
   const watchAcquisition = form.watch("acquisition");
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto p-6 bg-card rounded-xl border shadow-sm">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Add New Album</h2>
-        <p className="text-muted-foreground">
-          Search MusicBrainz or enter details manually.
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {/* Search Section - Only show if no initial data provided */}
       {!initialData && (
         <div className="space-y-2">
