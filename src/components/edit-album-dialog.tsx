@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Trash2 } from "lucide-react";
+import { RatingInput } from "./ui/rating-input";
 
 export type AlbumWithCover = Doc<"albums"> & { coverImageUrl: string | null };
 
@@ -137,7 +138,7 @@ export function EditAlbumDialog({
         acquisition: "wishlist" | "library";
         progress?: "backlog" | "active" | "completed";
         isArchived: boolean;
-        rating?: number;
+        rating?: number | null;
         rymLink?: string;
         notes?: string;
         musicBrainzId?: string;
@@ -151,7 +152,7 @@ export function EditAlbumDialog({
         acquisition: data.acquisition,
         progress: data.progress,
         isArchived: data.isArchived,
-        rating: data.rating,
+        rating: data.rating ?? null,
         rymLink: data.rymLink || undefined,
         notes: data.notes || undefined,
         musicBrainzId: data.musicBrainzId || undefined,
@@ -273,11 +274,12 @@ export function EditAlbumDialog({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field>
               <FieldLabel>Rating (1-10)</FieldLabel>
-              <Input
-                type="number"
-                min={1}
-                max={10}
-                {...form.register("rating", { valueAsNumber: true })}
+              <Controller
+                control={form.control}
+                name="rating"
+                render={({ field }) => (
+                  <RatingInput value={field.value} onChange={field.onChange} />
+                )}
               />
               <FieldError errors={[form.formState.errors.rating]} />
             </Field>

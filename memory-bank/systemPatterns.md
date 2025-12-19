@@ -13,6 +13,7 @@
 - **Forms:** React Hook Form + Zod. Validation logic is shared or mirrored between UI and Backend where possible.
 - **Command Palette:** The "Add Album" workflow uses a `cmdk`-based command palette for quick, keyboard-first interactions. It integrates live search (MusicBrainz) and confirmation dialogs into a seamless flow.
 - **Modals:** Critical actions like "Edit Album" are handled in modal dialogs to maintain context within the library view.
+- **Custom Inputs:** Specialized UI components (like `RatingInput`) are created to match specific design requirements (e.g., column width control style) rather than relying solely on standard HTML inputs.
 - **Images:** Images are fetched server-side (via Convex actions if needed) or uploaded directly to Convex Storage, returning a storage ID stored on the Album document.
 - **Search:** Search is hybrid—MusicBrainz for initial metadata (via Command Palette), internal Convex search for library browsing.
 
@@ -24,3 +25,4 @@
   - `Backlog` -> `Active`
   - `Active` -> `Completed`
   - Any State + `Archived = true` -> Hidden
+  - `Rating` -> Optional (1-10) or Null (Unrated)

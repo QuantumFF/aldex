@@ -17,6 +17,7 @@
   - Edit/Delete Actions: [Completed]
   - **UI Redesign (Single View + Dynamic Grid):** [Completed]
   - **Add Album Workflow (Command Palette):** [Completed]
+  - **Rating System Redesign:** [Completed]
 
 ## Known Issues / Constraints
 

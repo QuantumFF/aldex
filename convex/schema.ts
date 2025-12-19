@@ -23,7 +23,7 @@ export default defineSchema({
     isArchived: v.boolean(),
 
     // User Data
-    rating: v.optional(v.number()), // 1-10 or 1-5 scale
+    rating: v.optional(v.union(v.number(), v.null())), // 1-10 or 1-5 scale
     rymLink: v.optional(v.string()),
     notes: v.optional(v.string()),
 

@@ -4,8 +4,12 @@ import { mutation, query } from "./_generated/server";
 // Get all albums, optionally filtered by acquisition status or progress
 export const get = query({
   args: {
-    acquisition: v.optional(v.union(v.literal("wishlist"), v.literal("library"))),
-    progress: v.optional(v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))),
+    acquisition: v.optional(
+      v.union(v.literal("wishlist"), v.literal("library"))
+    ),
+    progress: v.optional(
+      v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
+    ),
   },
   handler: async (ctx, args) => {
     const { acquisition, progress } = args;
@@ -56,7 +60,7 @@ export const create = mutation({
       v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
     ),
     isArchived: v.boolean(),
-    rating: v.optional(v.number()),
+    rating: v.optional(v.union(v.number(), v.null())),
     rymLink: v.optional(v.string()),
     notes: v.optional(v.string()),
     musicBrainzId: v.optional(v.string()),
@@ -79,12 +83,14 @@ export const update = mutation({
     artist: v.optional(v.string()),
     releaseYear: v.optional(v.number()),
     coverImageId: v.optional(v.id("_storage")),
-    acquisition: v.optional(v.union(v.literal("wishlist"), v.literal("library"))),
+    acquisition: v.optional(
+      v.union(v.literal("wishlist"), v.literal("library"))
+    ),
     progress: v.optional(
       v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
     ),
     isArchived: v.optional(v.boolean()),
-    rating: v.optional(v.number()),
+    rating: v.optional(v.union(v.number(), v.null())),
     rymLink: v.optional(v.string()),
     notes: v.optional(v.string()),
     musicBrainzId: v.optional(v.string()),
