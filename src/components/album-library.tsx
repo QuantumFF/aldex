@@ -38,6 +38,12 @@ export function AlbumLibrary() {
   const filteredAlbums = useMemo(() => {
     if (!allAlbums) return [];
 
+    console.log("Filtering with:", {
+      acquisitionFilter,
+      progressFilter,
+      searchQuery,
+    });
+
     return allAlbums.filter((album) => {
       // 1. Text Search
       if (searchQuery) {
@@ -60,7 +66,11 @@ export function AlbumLibrary() {
         // If filtering by progress, we implicitly require acquisition to be 'library' usually,
         // but the schema says 'progress' is optional.
         // If album doesn't have progress, it shouldn't match a specific progress filter.
-        if (!album.progress || album.progress !== progressFilter) return false;
+        const effectiveProgress =
+          album.progress ||
+          (album.acquisition === "library" ? "backlog" : undefined);
+        if (!effectiveProgress || effectiveProgress !== progressFilter)
+          return false;
       }
 
       return true;
@@ -119,7 +129,10 @@ export function AlbumLibrary() {
             <ToggleGroup
               type="single"
               value={acquisitionFilter}
-              onValueChange={(value) => setAcquisitionFilter(value || "all")}
+              onValueChange={(value) => {
+                console.log("Acquisition filter changed to:", value);
+                setAcquisitionFilter(value || "all");
+              }}
               className="border rounded-md p-1 bg-background"
             >
               <ToggleGroupItem value="all" className="h-7 px-3 text-xs">
@@ -136,7 +149,10 @@ export function AlbumLibrary() {
             <ToggleGroup
               type="single"
               value={progressFilter}
-              onValueChange={(value) => setProgressFilter(value || "all")}
+              onValueChange={(value) => {
+                console.log("Progress filter changed to:", value);
+                setProgressFilter(value || "all");
+              }}
               className="border rounded-md p-1 bg-background"
             >
               <ToggleGroupItem value="all" className="h-7 px-3 text-xs">
@@ -265,12 +281,12 @@ export function AlbumLibrary() {
                     >
                       {album.acquisition}
                     </Badge>
-                    {album.progress && (
+                    {(album.progress || album.acquisition === "library") && (
                       <Badge
                         variant="default"
                         className="text-[10px] h-5 capitalize opacity-90 shadow-sm"
                       >
-                        {album.progress}
+                        {album.progress || "backlog"}
                       </Badge>
                     )}
                   </div>
@@ -335,9 +351,9 @@ export function AlbumLibrary() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {album.progress ? (
+                    {album.progress || album.acquisition === "library" ? (
                       <Badge variant="outline" className="capitalize">
-                        {album.progress}
+                        {album.progress || "backlog"}
                       </Badge>
                     ) : (
                       "-"
