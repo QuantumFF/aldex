@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useQuery } from "convex/react";
-import { LayoutGrid, List, Search, X } from "lucide-react";
+import { LayoutGrid, List, Minus, Plus, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { AddAlbumDialog } from "./add-album-dialog";
@@ -166,21 +166,36 @@ export function AlbumLibrary() {
           {/* View Toggle */}
           <div className="flex items-center gap-2">
             {view === "grid" && (
-              <Select
-                value={columnCount.toString()}
-                onValueChange={(v) => setColumnCount(parseInt(v))}
-              >
-                <SelectTrigger className="w-[70px] h-9">
-                  <SelectValue placeholder="Cols" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[2, 3, 4, 5, 6, 8, 10].map((num) => (
-                    <SelectItem key={num} value={num.toString()}>
-                      {num}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center border rounded-md bg-background mr-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-8 rounded-r-none"
+                  onClick={() => setColumnCount(Math.max(2, columnCount - 1))}
+                  disabled={columnCount <= 2}
+                >
+                  <Minus className="h-4 w-4" />
+                  <span className="sr-only">Decrease columns</span>
+                </Button>
+                <div className="flex flex-col items-center justify-center w-16 px-1 select-none">
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                    Columns
+                  </span>
+                  <span className="text-sm font-bold leading-none">
+                    {columnCount}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-8 rounded-l-none"
+                  onClick={() => setColumnCount(Math.min(10, columnCount + 1))}
+                  disabled={columnCount >= 10}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">Increase columns</span>
+                </Button>
+              </div>
             )}
 
             <ToggleGroup
