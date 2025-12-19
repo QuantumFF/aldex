@@ -1,6 +1,5 @@
 "use client";
 
-import type { DashboardView } from "@/app/dashboard/page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,19 +22,17 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useQuery } from "convex/react";
 import { LayoutGrid, List, Search, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { AddAlbumDialog } from "./add-album-dialog";
 import { EditAlbumDialog, type AlbumWithCover } from "./edit-album-dialog";
 
-interface AlbumLibraryProps {
-  type: DashboardView;
-}
-
-export function AlbumLibrary({ type }: AlbumLibraryProps) {
+export function AlbumLibrary() {
   // Fetch ALL albums
   const allAlbums = useQuery(api.albums.get, {});
 
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [columnCount, setColumnCount] = useState(5);
   const [editingAlbum, setEditingAlbum] = useState<AlbumWithCover | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -43,36 +40,6 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [acquisitionFilter, setAcquisitionFilter] = useState<string>("all");
   const [progressFilter, setProgressFilter] = useState<string>("all");
-
-  // Sync filters with the 'type' prop (sidebar navigation)
-  useEffect(() => {
-    setSearchQuery("");
-    switch (type) {
-      case "library":
-        setAcquisitionFilter("library");
-        setProgressFilter("all");
-        break;
-      case "wishlist":
-        setAcquisitionFilter("wishlist");
-        setProgressFilter("all");
-        break;
-      case "backlog":
-        setAcquisitionFilter("library");
-        setProgressFilter("backlog");
-        break;
-      case "active":
-        setAcquisitionFilter("library");
-        setProgressFilter("active");
-        break;
-      case "completed":
-        setAcquisitionFilter("library");
-        setProgressFilter("completed");
-        break;
-      default:
-        setAcquisitionFilter("all");
-        setProgressFilter("all");
-    }
-  }, [type]);
 
   // Client-side filtering logic
   const filteredAlbums = useMemo(() => {
@@ -197,27 +164,49 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
           </div>
 
           {/* View Toggle */}
-          <ToggleGroup
-            type="single"
-            value={view}
-            onValueChange={(v) => v && setView(v as "grid" | "list")}
-            className="border rounded-md p-1"
-          >
-            <ToggleGroupItem
-              value="grid"
-              aria-label="Grid view"
-              className="h-7 w-7 p-0"
+          <div className="flex items-center gap-2">
+            {view === "grid" && (
+              <Select
+                value={columnCount.toString()}
+                onValueChange={(v) => setColumnCount(parseInt(v))}
+              >
+                <SelectTrigger className="w-[70px] h-9">
+                  <SelectValue placeholder="Cols" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[2, 3, 4, 5, 6, 8, 10].map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            <ToggleGroup
+              type="single"
+              value={view}
+              onValueChange={(v) => v && setView(v as "grid" | "list")}
+              className="border rounded-md p-1"
             >
-              <LayoutGrid className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="list"
-              aria-label="List view"
-              className="h-7 w-7 p-0"
-            >
-              <List className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+              <ToggleGroupItem
+                value="grid"
+                aria-label="Grid view"
+                className="h-7 w-7 p-0"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="list"
+                aria-label="List view"
+                className="h-7 w-7 p-0"
+              >
+                <List className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            <AddAlbumDialog />
+          </div>
         </div>
       </div>
 
@@ -231,7 +220,12 @@ export function AlbumLibrary({ type }: AlbumLibraryProps) {
           </Button>
         </div>
       ) : view === "grid" ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div
+          className="grid gap-4"
+          style={{
+            gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+          }}
+        >
           {filteredAlbums.map((album) => (
             <Card
               key={album._id}

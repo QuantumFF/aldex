@@ -15,6 +15,8 @@
   - Basic Dashboard Routing: [Completed]
   - Search & Filter (Client-side): [Completed]
   - Edit/Delete Actions: [Completed]
+  - **UI Redesign (Single View + Dynamic Grid):** [Completed]
+  - **Add Album Dialog:** [Completed]
 
 ## Known Issues / Constraints
 

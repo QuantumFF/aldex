@@ -3,7 +3,7 @@
 ## Current Focus
 
 **Sprint 1: Core Functionality & Initialization**
-We are setting up the project foundation and the ability to add albums.
+We are refining the core user interface to be more minimalist and album-centric.
 
 ## Recent Decisions
 
@@ -11,10 +11,10 @@ We are setting up the project foundation and the ability to add albums.
 2. **Image Strategy:** **Convex File Storage**. We will download covers and store them, rather than hotlinking.
 3. **Data Source:** **MusicBrainz** for metadata search (open data, no complex auth).
 4. **Schema Logic:** Split state into `acquisition` (Wishlist/Library) and `progress` (Backlog/Active/Completed) to enforce mutually exclusive logic while allowing flexible tagging.
-5. **UI Refactoring:** Modified shadcn `sidebar-06` template to fit Aldex structure (Collection/Progress/Manage sections). Removed unused components.
-6. **Routing:** Implemented basic state-based routing in the dashboard to switch between Library, Wishlist, and Progress views.
-7. **Filtering:** Implemented client-side filtering for Search, Acquisition, and Progress within the Library view, allowing flexible exploration of the collection.
-8. **Edit/Delete UI:** Implemented `EditAlbumDialog` using shadcn/ui `Dialog` component (centered modal) instead of a `Sheet` (side panel) for better focus during editing.
+5. **UI Redesign:** Removed the sidebar navigation in favor of a single, filterable **Album Library** view. This aligns with the "minimalist" goal.
+6. **Dashboard Layout:** The main dashboard now features a dynamic grid with user-selectable column count (2-10 columns) to optimize screen real estate.
+7. **Add Album Workflow:** Moved "Add Album" from a separate page to a modal dialog (`AddAlbumDialog`) accessible directly from the library view.
+8. **Filtering:** Navigation between "Library", "Wishlist", etc., is now handled entirely by client-side filters within the main view.
 
 ## Development Preferences
 
@@ -22,5 +22,5 @@ We are setting up the project foundation and the ability to add albums.
 
 ## Next Steps
 
-1. Set up TanStack Router for more robust URL-based routing.
-2. Polish UI and UX.
+1. Set up TanStack Router for more robust URL-based routing (if needed for deep linking filters).
+2. Polish UI and UX (animations, empty states).

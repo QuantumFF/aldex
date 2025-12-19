@@ -6,6 +6,8 @@ Existing tools (RYM, Spotify, Last.fm) are either too social, too automated, or 
 
 ## User Experience
 
+- **Single-View Dashboard:** A unified "Album Library" view that acts as the central hub. No complex navigation menus.
+- **Dynamic Grid:** Users can adjust the density of the album grid (2-10 columns) to suit their screen size and preference.
 - **Fast Browsing:** Optimized for quick filtering and visual scanning.
 - **Keyboard Friendly:** Desktop-first interactions.
 - **Intentionality:** Adding an album is a deliberate action, not a background sync.
