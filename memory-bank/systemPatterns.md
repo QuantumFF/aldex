@@ -19,7 +19,7 @@
 
 - **Albums:** The central collection.
 - **State Machine:**
-  - `Wishlist` -> `Library` (Backlog)
+  - `Wishlist` -> `Library` (Implicitly `Backlog` if progress is unset)
   - `Backlog` -> `Active`
   - `Active` -> `Completed`
   - Any State + `Archived = true` -> Hidden
