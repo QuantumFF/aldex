@@ -27,6 +27,10 @@ We are refining the core user interface to be more minimalist and album-centric.
     - **Focus Management:** Implemented auto-focus on the "Add to Library" button after loading completes to ensure smooth keyboard navigation.
     - **Notifications:** Replaced browser alerts with `sonner` toast notifications for a more modern and non-intrusive feedback experience.
 17. **Data Integrity:** Implemented duplicate prevention by enforcing uniqueness on `musicBrainzId` in the backend and handling the error gracefully in the frontend.
+18. **Archived Feature:** Implemented a dedicated "Archived" view in the library filter. Archived albums are now strictly hidden from "Library" and "Wishlist" views and only appear in the "Archived" tab.
+19. **UI Refinements:**
+    - **Year Input:** Created a custom `YearInput` component with `+` / `-` buttons for consistent data entry.
+    - **Checkbox:** Switched to `shadcn/ui` Checkbox for the "Archived" toggle in the edit dialog.
 
 ## Development Preferences
 

@@ -22,6 +22,8 @@
   - **Search Optimization (Popularity Sorting):** [Completed]
   - **Duplicate Prevention:** [Completed]
   - **Toast Notifications:** [Completed]
+  - **Archived Feature & View:** [Completed]
+  - **UI Refinements (Year Input, Checkbox):** [Completed]
 
   ## Known Issues / Constraints
   - RateYourMusic (RYM) has no API; we only store links.

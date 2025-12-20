@@ -27,5 +27,5 @@
   - `Wishlist` -> `Library` (Implicitly `Backlog` if progress is unset)
   - `Backlog` -> `Active`
   - `Active` -> `Completed`
-  - Any State + `Archived = true` -> Hidden
+  - Any State + `Archived = true` -> Hidden from default views, visible in "Archived" view.
   - `Rating` -> Optional (1-10) or Null (Unrated)

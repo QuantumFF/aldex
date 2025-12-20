@@ -75,11 +75,18 @@ export function AlbumLibrary() {
       }
 
       // 2. Acquisition Filter
-      if (
-        acquisitionFilter !== "all" &&
-        album.acquisition !== acquisitionFilter
-      ) {
-        return false;
+      if (acquisitionFilter === "archived") {
+        if (!album.isArchived) return false;
+      } else {
+        // Hide archived albums from other views
+        if (album.isArchived) return false;
+
+        if (
+          acquisitionFilter !== "all" &&
+          album.acquisition !== acquisitionFilter
+        ) {
+          return false;
+        }
       }
 
       // 3. Progress Filter
@@ -164,6 +171,9 @@ export function AlbumLibrary() {
               </ToggleGroupItem>
               <ToggleGroupItem value="wishlist" className="h-7 px-3 text-xs">
                 Wishlist
+              </ToggleGroupItem>
+              <ToggleGroupItem value="archived" className="h-7 px-3 text-xs">
+                Archived
               </ToggleGroupItem>
             </ToggleGroup>
 

@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +46,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { RatingInput } from "./ui/rating-input";
+import { YearInput } from "./ui/year-input";
 
 export type AlbumWithCover = Doc<"albums"> & { coverImageUrl: string | null };
 
@@ -219,9 +221,12 @@ export function EditAlbumDialog({
 
             <Field>
               <FieldLabel>Year</FieldLabel>
-              <Input
-                type="number"
-                {...form.register("releaseYear", { valueAsNumber: true })}
+              <Controller
+                control={form.control}
+                name="releaseYear"
+                render={({ field }) => (
+                  <YearInput value={field.value} onChange={field.onChange} />
+                )}
               />
               <FieldError errors={[form.formState.errors.releaseYear]} />
             </Field>
@@ -290,14 +295,19 @@ export function EditAlbumDialog({
             <Field>
               <FieldLabel>Archived</FieldLabel>
               <div className="flex items-center h-10">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4"
-                    {...form.register("isArchived")}
-                  />
-                  <span className="text-sm">Hide from default views</span>
-                </label>
+                <Controller
+                  control={form.control}
+                  name="isArchived"
+                  render={({ field }) => (
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <span className="text-sm">Hide from default views</span>
+                    </label>
+                  )}
+                />
               </div>
             </Field>
           </div>
