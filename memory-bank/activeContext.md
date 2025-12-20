@@ -21,6 +21,12 @@ We are refining the core user interface to be more minimalist and album-centric.
 12. **Responsive Columns:** Implemented automatic adjustment of grid column count based on window width for better responsiveness.
 13. **Rating System Redesign:** Implemented a custom `RatingInput` component with `+` / `-` buttons and manual input, matching the column width control style. Updated schema to allow `null` ratings for explicit "unrating".
 14. **RateYourMusic Integration:** Implemented automatic RYM link generation based on artist/album metadata during the add process. Added a quick-access RYM button overlay on the album art in the grid view.
+15. **Search Optimization:** Enhanced MusicBrainz search to prioritize "popular" results by sorting based on relevance score, primary type (Album > EP > Single), and release count.
+16. **UX Improvements:**
+    - **Race Condition Fix:** Added loading states to the "Add Album" dialog to prevent adding an album before the cover art is fetched.
+    - **Focus Management:** Implemented auto-focus on the "Add to Library" button after loading completes to ensure smooth keyboard navigation.
+    - **Notifications:** Replaced browser alerts with `sonner` toast notifications for a more modern and non-intrusive feedback experience.
+17. **Data Integrity:** Implemented duplicate prevention by enforcing uniqueness on `musicBrainzId` in the backend and handling the error gracefully in the frontend.
 
 ## Development Preferences
 

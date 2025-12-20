@@ -67,6 +67,19 @@ export const create = mutation({
     genres: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    if (args.musicBrainzId) {
+      const existing = await ctx.db
+        .query("albums")
+        .withIndex("by_musicBrainzId", (q) =>
+          q.eq("musicBrainzId", args.musicBrainzId)
+        )
+        .first();
+
+      if (existing) {
+        throw new Error("Album already exists in your library");
+      }
+    }
+
     const newAlbumId = await ctx.db.insert("albums", {
       ...args,
       addedAt: Date.now(),

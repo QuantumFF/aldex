@@ -26,6 +26,7 @@ import { cn, generateRymLink } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import { Disc, Loader2, Search } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import { api } from "../../convex/_generated/api";
 
 export function AddAlbumCommand() {
@@ -38,7 +39,9 @@ export function AddAlbumCommand() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
   const [coverUrl, setCoverUrl] = React.useState<string | null>(null);
+  const [loadingCover, setLoadingCover] = React.useState(false);
   const [adding, setAdding] = React.useState(false);
+  const addToLibraryButtonRef = React.useRef<HTMLButtonElement>(null);
 
   const createAlbum = useMutation(api.albums.create);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -76,14 +79,26 @@ export function AddAlbumCommand() {
     return () => clearTimeout(timer);
   }, [query]);
 
+  React.useEffect(() => {
+    if (!loadingCover && confirmOpen && addToLibraryButtonRef.current) {
+      addToLibraryButtonRef.current.focus();
+    }
+  }, [loadingCover, confirmOpen]);
+
   const handleSelect = async (album: MusicBrainzReleaseGroup) => {
     setSelectedAlbum(album);
     setOpen(false);
     setConfirmOpen(true);
+    setLoadingCover(true);
+    setCoverUrl(null);
 
-    // Fetch cover art
-    const cover = await getAlbumCover(album.id);
-    setCoverUrl(cover);
+    try {
+      // Fetch cover art
+      const cover = await getAlbumCover(album.id);
+      setCoverUrl(cover);
+    } finally {
+      setLoadingCover(false);
+    }
   };
 
   const handleAdd = async (acquisition: "library" | "wishlist") => {
@@ -127,12 +142,17 @@ export function AddAlbumCommand() {
         rymLink: generateRymLink(artist, selectedAlbum.title),
       });
 
+      toast.success("Album added successfully");
       setConfirmOpen(false);
       setSelectedAlbum(null);
       setCoverUrl(null);
     } catch (error) {
       console.error("Failed to add album", error);
-      alert("Failed to add album");
+      const message =
+        error instanceof Error && error.message.includes("Album already exists")
+          ? "This album is already in your library."
+          : "Failed to add album";
+      toast.error(message);
     } finally {
       setAdding(false);
     }
@@ -204,7 +224,11 @@ export function AddAlbumCommand() {
             <div className="grid gap-4 py-4">
               <div className="flex items-start gap-4">
                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
-                  {coverUrl ? (
+                  {loadingCover ? (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : coverUrl ? (
                     <img
                       src={coverUrl}
                       alt={selectedAlbum.title}
@@ -233,9 +257,10 @@ export function AddAlbumCommand() {
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             <div className="flex gap-2 w-full">
               <Button
+                ref={addToLibraryButtonRef}
                 className="flex-1"
                 onClick={() => handleAdd("library")}
-                disabled={adding}
+                disabled={adding || loadingCover}
               >
                 {adding ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -246,7 +271,7 @@ export function AddAlbumCommand() {
                 variant="secondary"
                 className="flex-1"
                 onClick={() => handleAdd("wishlist")}
-                disabled={adding}
+                disabled={adding || loadingCover}
               >
                 Add to Wishlist
               </Button>

@@ -19,8 +19,9 @@
   - **Add Album Workflow (Command Palette):** [Completed]
   - **Rating System Redesign:** [Completed]
   - **RateYourMusic Integration:** [Completed]
+  - **Search Optimization (Popularity Sorting):** [Completed]
+  - **Duplicate Prevention:** [Completed]
+  - **Toast Notifications:** [Completed]
 
-## Known Issues / Constraints
-
-- RateYourMusic (RYM) has no API; we only store links.
-- MusicBrainz search may require fuzzy matching or user selection to avoid duplicates.
+  ## Known Issues / Constraints
+  - RateYourMusic (RYM) has no API; we only store links.

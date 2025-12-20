@@ -38,5 +38,6 @@ export default defineSchema({
     .index("by_acquisition", ["acquisition"])
     .index("by_progress", ["progress"])
     .index("by_artist", ["artist"])
-    .index("by_addedAt", ["addedAt"]),
+    .index("by_addedAt", ["addedAt"])
+    .index("by_musicBrainzId", ["musicBrainzId"]),
 });

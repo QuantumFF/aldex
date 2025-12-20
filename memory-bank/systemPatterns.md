@@ -15,13 +15,14 @@
 - **Modals:** Critical actions like "Edit Album" are handled in modal dialogs to maintain context within the library view.
 - **Custom Inputs:** Specialized UI components (like `RatingInput`) are created to match specific design requirements (e.g., column width control style) rather than relying solely on standard HTML inputs.
 - **Images:** Images are fetched server-side (via Convex actions if needed) or uploaded directly to Convex Storage, returning a storage ID stored on the Album document.
-- **Search:** Search is hybrid—MusicBrainz for initial metadata (via Command Palette), internal Convex search for library browsing.
+- **Search:** Search is hybrid—MusicBrainz for initial metadata (via Command Palette), internal Convex search for library browsing. **MusicBrainz search results are sorted by popularity (release count) and type (Album > EP) to improve relevance.**
 - **External Link Generation:** We automatically generate external links (like RateYourMusic) using slugification logic on artist/album names, favoring automation with manual override.
 - **Action Overlays:** Secondary actions (like visiting an external link) are presented as hover-only overlays on the primary album art to maintain a clean aesthetic.
+- **Notifications:** We use `sonner` for toast notifications to provide non-intrusive feedback for actions like adding, editing, or deleting albums.
 
 ## Data Model Boundaries
 
-- **Albums:** The central collection.
+- **Albums:** The central collection. **Uniqueness is enforced on `musicBrainzId` to prevent duplicates.**
 - **State Machine:**
   - `Wishlist` -> `Library` (Implicitly `Backlog` if progress is unset)
   - `Backlog` -> `Active`

@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { RatingInput } from "./ui/rating-input";
 
 export type AlbumWithCover = Doc<"albums"> & { coverImageUrl: string | null };
@@ -165,10 +166,11 @@ export function EditAlbumDialog({
 
       await updateAlbum(updateArgs);
 
+      toast.success("Album updated successfully");
       onOpenChange(false);
     } catch (error) {
       console.error(error);
-      alert("Failed to update album");
+      toast.error("Failed to update album");
     } finally {
       setIsSubmitting(false);
     }
@@ -179,10 +181,11 @@ export function EditAlbumDialog({
     setIsDeleting(true);
     try {
       await deleteAlbum({ id: album._id as Id<"albums"> });
+      toast.success("Album deleted successfully");
       onOpenChange(false);
     } catch (error) {
       console.error(error);
-      alert("Failed to delete album");
+      toast.error("Failed to delete album");
     } finally {
       setIsDeleting(false);
     }
