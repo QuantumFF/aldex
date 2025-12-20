@@ -5,6 +5,7 @@ import {
   searchAlbums,
   type MusicBrainzReleaseGroup,
 } from "@/lib/musicbrainz";
+import { generateRymLink } from "@/lib/utils";
 import { albumSchema, type AlbumFormValues } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
@@ -80,13 +81,15 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
   };
 
   const handleSelectAlbum = async (album: MusicBrainzReleaseGroup) => {
+    const artist = album["artist-credit"]?.[0]?.name || "";
     form.setValue("title", album.title);
-    form.setValue("artist", album["artist-credit"]?.[0]?.name || "");
+    form.setValue("artist", artist);
     const year = album["first-release-date"]
       ? parseInt(album["first-release-date"].split("-")[0])
       : undefined;
     if (year) form.setValue("releaseYear", year);
     form.setValue("musicBrainzId", album.id);
+    form.setValue("rymLink", generateRymLink(artist, album.title));
 
     // Try to get cover art
     const cover = await getAlbumCover(album.id);

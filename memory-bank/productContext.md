@@ -11,6 +11,7 @@ Existing tools (RYM, Spotify, Last.fm) are either too social, too automated, or 
 - **Fast Browsing:** Optimized for quick filtering and visual scanning.
 - **Keyboard Friendly:** Desktop-first interactions.
 - **Intentionality:** Adding an album is a deliberate action, not a background sync.
+- **External Integration:** Seamless links to external databases (RateYourMusic) without compromising the private nature of the library.
 
 ## The Album Lifecycle (Mental Model)
 

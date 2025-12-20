@@ -311,6 +311,22 @@ export function AlbumLibrary() {
                       </Badge>
                     )}
                   </div>
+                  {album.rymLink && (
+                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8 rounded-full shadow-sm hover:bg-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(album.rymLink, "_blank");
+                        }}
+                        title="View on RateYourMusic"
+                      >
+                        <img src="/rym.svg" alt="RYM" className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="p-3 space-y-1">
                   <h3 className="line-clamp-1 text-sm font-semibold leading-tight">

@@ -16,6 +16,8 @@
 - **Custom Inputs:** Specialized UI components (like `RatingInput`) are created to match specific design requirements (e.g., column width control style) rather than relying solely on standard HTML inputs.
 - **Images:** Images are fetched server-side (via Convex actions if needed) or uploaded directly to Convex Storage, returning a storage ID stored on the Album document.
 - **Search:** Search is hybrid—MusicBrainz for initial metadata (via Command Palette), internal Convex search for library browsing.
+- **External Link Generation:** We automatically generate external links (like RateYourMusic) using slugification logic on artist/album names, favoring automation with manual override.
+- **Action Overlays:** Secondary actions (like visiting an external link) are presented as hover-only overlays on the primary album art to maintain a clean aesthetic.
 
 ## Data Model Boundaries
 

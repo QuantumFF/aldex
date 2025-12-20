@@ -22,7 +22,7 @@ import {
   searchAlbums,
   type MusicBrainzReleaseGroup,
 } from "@/lib/musicbrainz";
-import { cn } from "@/lib/utils";
+import { cn, generateRymLink } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import { Disc, Loader2, Search } from "lucide-react";
 import * as React from "react";
@@ -112,9 +112,10 @@ export function AddAlbumCommand() {
         }
       }
 
+      const artist = selectedAlbum["artist-credit"]?.[0]?.name || "";
       await createAlbum({
         title: selectedAlbum.title,
-        artist: selectedAlbum["artist-credit"]?.[0]?.name || "",
+        artist,
         releaseYear: selectedAlbum["first-release-date"]
           ? parseInt(selectedAlbum["first-release-date"].split("-")[0])
           : undefined,
@@ -123,6 +124,7 @@ export function AddAlbumCommand() {
         isArchived: false,
         musicBrainzId: selectedAlbum.id,
         coverImageId,
+        rymLink: generateRymLink(artist, selectedAlbum.title),
       });
 
       setConfirmOpen(false);
@@ -287,6 +289,10 @@ export function AddAlbumCommand() {
                   : undefined,
                 musicBrainzId: selectedAlbum.id,
                 coverUrl: coverUrl || "",
+                rymLink: generateRymLink(
+                  selectedAlbum["artist-credit"]?.[0]?.name || "",
+                  selectedAlbum.title
+                ),
               }}
               onSuccess={() => {
                 setEditOpen(false);

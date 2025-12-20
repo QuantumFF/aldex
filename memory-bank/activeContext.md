@@ -20,6 +20,7 @@ We are refining the core user interface to be more minimalist and album-centric.
 11. **Implicit Backlog Status:** Fixed logic to treat albums in `Library` with undefined `progress` as implicitly `Backlog` for filtering and display purposes.
 12. **Responsive Columns:** Implemented automatic adjustment of grid column count based on window width for better responsiveness.
 13. **Rating System Redesign:** Implemented a custom `RatingInput` component with `+` / `-` buttons and manual input, matching the column width control style. Updated schema to allow `null` ratings for explicit "unrating".
+14. **RateYourMusic Integration:** Implemented automatic RYM link generation based on artist/album metadata during the add process. Added a quick-access RYM button overlay on the album art in the grid view.
 
 ## Development Preferences
 

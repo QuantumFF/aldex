@@ -18,6 +18,7 @@
   - **UI Redesign (Single View + Dynamic Grid):** [Completed]
   - **Add Album Workflow (Command Palette):** [Completed]
   - **Rating System Redesign:** [Completed]
+  - **RateYourMusic Integration:** [Completed]
 
 ## Known Issues / Constraints
 
