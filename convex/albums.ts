@@ -140,3 +140,35 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+// Batch delete albums
+export const batchDelete = mutation({
+  args: { ids: v.array(v.id("albums")) },
+  handler: async (ctx, args) => {
+    await Promise.all(args.ids.map((id) => ctx.db.delete(id)));
+  },
+});
+
+// Batch update albums
+export const batchUpdate = mutation({
+  args: {
+    ids: v.array(v.id("albums")),
+    updates: v.object({
+      acquisition: v.optional(
+        v.union(v.literal("wishlist"), v.literal("library"))
+      ),
+      progress: v.optional(
+        v.union(
+          v.literal("backlog"),
+          v.literal("active"),
+          v.literal("completed")
+        )
+      ),
+      isArchived: v.optional(v.boolean()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const { ids, updates } = args;
+    await Promise.all(ids.map((id) => ctx.db.patch(id, updates)));
+  },
+});

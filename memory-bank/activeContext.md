@@ -34,6 +34,7 @@ We are refining the core user interface to be more minimalist and album-centric.
 20. **Performance Optimization:**
     - **Non-Blocking Add Album:** Refactored the "Add Album" workflow to be non-blocking. The client immediately adds the album to the library and then orchestrates a background fetch for the cover art via a Convex Action. A persistent toast notification keeps the user informed of the background process ("Fetching cover art..."), ensuring a responsive UI while maintaining data completeness.
     - **Lazy Image Loading:** Refactored the main album query to return only `storageId` instead of resolving signed URLs for every album. Created a dedicated `AlbumCover` component that fetches image URLs individually on demand. This eliminates the N+1 query bottleneck on the backend and drastically improves initial page load and refresh performance.
+21. **Batch Operations:** Implemented a comprehensive batch edit mode allowing users to select multiple albums (via click, Select All, or Shift-Select range) and perform bulk actions: Delete, Archive, Set Status (Library/Wishlist), and Set Progress (Backlog/Active/Completed).
 
 ## Development Preferences
 

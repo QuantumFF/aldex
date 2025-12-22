@@ -27,6 +27,7 @@
   - **Performance Optimization (Background Image Upload):** [Completed]
   - **Performance Optimization (Lazy Image Loading):** [Completed]
   - **Non-Blocking Add Album with Progress Toast:** [Completed]
+  - **Batch Operations (Edit, Delete, Archive, Status/Progress):** [Completed]
 
   ## Known Issues / Constraints
   - RateYourMusic (RYM) has no API; we only store links.
