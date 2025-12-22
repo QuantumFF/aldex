@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { action, internalMutation, mutation, query } from "./_generated/server";
 
 // Get all albums, optionally filtered by acquisition status or progress
 export const get = query({
@@ -55,6 +56,7 @@ export const create = mutation({
     artist: v.string(),
     releaseYear: v.optional(v.number()),
     coverImageId: v.optional(v.id("_storage")),
+    coverUrl: v.optional(v.string()),
     acquisition: v.union(v.literal("wishlist"), v.literal("library")),
     progress: v.optional(
       v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
@@ -84,7 +86,29 @@ export const create = mutation({
       ...args,
       addedAt: Date.now(),
     });
+
+    if (args.coverUrl) {
+      await ctx.scheduler.runAfter(0, (internal as any).images.storeCoverArt, {
+        albumId: newAlbumId,
+        coverUrl: args.coverUrl,
+      });
+    }
+
     return newAlbumId;
+  },
+});
+
+export const updateCoverImageId = internalMutation({
+  args: {
+    albumId: v.id("albums"),
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    const { albumId, storageId } = args;
+    await ctx.db.patch(albumId, {
+      coverImageId: storageId,
+      coverUrl: undefined, // Clear the URL once stored
+    });
   },
 });
 

@@ -10,6 +10,7 @@ export default defineSchema({
 
     // Image stored in Convex Storage
     coverImageId: v.optional(v.id("_storage")),
+    coverUrl: v.optional(v.string()),
 
     // Lifecycle State
     // "acquisition" determines if we own it or want it.

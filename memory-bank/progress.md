@@ -24,6 +24,7 @@
   - **Toast Notifications:** [Completed]
   - **Archived Feature & View:** [Completed]
   - **UI Refinements (Year Input, Checkbox):** [Completed]
+  - **Performance Optimization (Background Image Upload):** [Completed]
 
   ## Known Issues / Constraints
   - RateYourMusic (RYM) has no API; we only store links.

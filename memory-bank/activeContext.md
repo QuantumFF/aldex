@@ -31,6 +31,8 @@ We are refining the core user interface to be more minimalist and album-centric.
 19. **UI Refinements:**
     - **Year Input:** Created a custom `YearInput` component with `+` / `-` buttons for consistent data entry.
     - **Checkbox:** Switched to `shadcn/ui` Checkbox for the "Archived" toggle in the edit dialog.
+20. **Performance Optimization:**
+    - **Non-Blocking Add Album:** Refactored the "Add Album" workflow to be non-blocking. The client now sends the external image URL directly to the backend, which then handles the download and storage in a background Convex Action. This eliminates the slow double-hop (External -> Client -> Convex) and makes the UI feel instant.
 
 ## Development Preferences
 

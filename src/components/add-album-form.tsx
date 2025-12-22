@@ -52,7 +52,6 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const createAlbum = useMutation(api.albums.create);
 
   const form = useForm<AlbumFormValues>({
@@ -104,29 +103,6 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
   const onSubmit = async (data: AlbumFormValues) => {
     setIsSubmitting(true);
     try {
-      let coverImageId = undefined;
-
-      // Handle Image Upload if URL exists
-      if (data.coverUrl) {
-        try {
-          const response = await fetch(data.coverUrl);
-          const blob = await response.blob();
-          const uploadUrl = await generateUploadUrl();
-
-          const result = await fetch(uploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": blob.type },
-            body: blob,
-          });
-
-          const { storageId } = await result.json();
-          coverImageId = storageId;
-        } catch (e) {
-          console.error("Failed to upload image", e);
-          // Continue without image or show error? For now continue.
-        }
-      }
-
       await createAlbum({
         title: data.title,
         artist: data.artist,
@@ -139,7 +115,7 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
         notes: data.notes || undefined,
         musicBrainzId: data.musicBrainzId || undefined,
         genres: data.genres,
-        coverImageId: coverImageId,
+        coverUrl: data.coverUrl || undefined,
       });
 
       form.reset();

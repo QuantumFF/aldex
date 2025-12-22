@@ -44,7 +44,6 @@ export function AddAlbumCommand() {
   const addToLibraryButtonRef = React.useRef<HTMLButtonElement>(null);
 
   const createAlbum = useMutation(api.albums.create);
-  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -106,27 +105,6 @@ export function AddAlbumCommand() {
     setAdding(true);
 
     try {
-      let coverImageId = undefined;
-
-      if (coverUrl) {
-        try {
-          const response = await fetch(coverUrl);
-          const blob = await response.blob();
-          const uploadUrl = await generateUploadUrl();
-
-          const result = await fetch(uploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": blob.type },
-            body: blob,
-          });
-
-          const { storageId } = await result.json();
-          coverImageId = storageId;
-        } catch (e) {
-          console.error("Failed to upload image", e);
-        }
-      }
-
       const artist = selectedAlbum["artist-credit"]?.[0]?.name || "";
       await createAlbum({
         title: selectedAlbum.title,
@@ -138,7 +116,7 @@ export function AddAlbumCommand() {
         progress: acquisition === "library" ? "backlog" : undefined,
         isArchived: false,
         musicBrainzId: selectedAlbum.id,
-        coverImageId,
+        coverUrl: coverUrl || undefined,
         rymLink: generateRymLink(artist, selectedAlbum.title),
       });
 
