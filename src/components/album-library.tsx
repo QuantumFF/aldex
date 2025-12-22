@@ -19,6 +19,7 @@ import { LayoutGrid, List, Minus, Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { AddAlbumCommand } from "./add-album-command";
+import { AlbumCover } from "./album-cover";
 import { EditAlbumDialog, type AlbumWithCover } from "./edit-album-dialog";
 
 export function AlbumLibrary() {
@@ -287,17 +288,10 @@ export function AlbumLibrary() {
             >
               <CardContent className="p-0">
                 <div className="group relative aspect-square overflow-hidden bg-muted">
-                  {album.coverImageUrl ? (
-                    <img
-                      src={album.coverImageUrl}
-                      alt={album.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                      No Cover
-                    </div>
-                  )}
+                  <AlbumCover
+                    storageId={album.coverImageId}
+                    title={album.title}
+                  />
                   {album.rating && (
                     <div className="absolute top-2 right-2">
                       <Badge variant="secondary" className="font-bold">
@@ -373,13 +367,10 @@ export function AlbumLibrary() {
                 >
                   <TableCell>
                     <div className="h-10 w-10 overflow-hidden rounded bg-muted">
-                      {album.coverImageUrl ? (
-                        <img
-                          src={album.coverImageUrl}
-                          alt={album.title}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : null}
+                      <AlbumCover
+                        storageId={album.coverImageId}
+                        title={album.title}
+                      />
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{album.title}</TableCell>

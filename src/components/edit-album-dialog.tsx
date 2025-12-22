@@ -48,7 +48,7 @@ import { toast } from "sonner";
 import { RatingInput } from "./ui/rating-input";
 import { YearInput } from "./ui/year-input";
 
-export type AlbumWithCover = Doc<"albums"> & { coverImageUrl: string | null };
+export type AlbumWithCover = Doc<"albums">;
 
 interface EditAlbumDialogProps {
   album: AlbumWithCover | null;
@@ -98,7 +98,7 @@ export function EditAlbumDialog({
         notes: album.notes || "",
         musicBrainzId: album.musicBrainzId || "",
         genres: album.genres || [],
-        coverUrl: album.coverImageUrl || "",
+        coverUrl: "",
       });
     }
   }, [album, form]);
@@ -109,10 +109,8 @@ export function EditAlbumDialog({
     try {
       let coverImageId = undefined;
 
-      // Only upload if coverUrl changed and is not empty
-      // We assume if it matches the existing signed URL (or is empty), we don't need to upload.
-      // Note: album.coverImageUrl is the signed URL.
-      if (data.coverUrl && data.coverUrl !== album.coverImageUrl) {
+      // Only upload if coverUrl is provided
+      if (data.coverUrl) {
         try {
           const response = await fetch(data.coverUrl);
           const blob = await response.blob();

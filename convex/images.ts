@@ -1,6 +1,13 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { action } from "./_generated/server";
+import { action, query } from "./_generated/server";
+
+export const getUrl = query({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
 
 export const storeCoverArt = action({
   args: {

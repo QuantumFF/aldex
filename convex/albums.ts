@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
-import { action, internalMutation, mutation, query } from "./_generated/server";
+import { api } from "./_generated/api";
+import { internalMutation, mutation, query } from "./_generated/server";
 
 // Get all albums, optionally filtered by acquisition status or progress
 export const get = query({
@@ -30,14 +30,7 @@ export const get = query({
       return await ctx.db.query("albums").collect();
     })();
 
-    return Promise.all(
-      albums.map(async (album) => ({
-        ...album,
-        coverImageUrl: album.coverImageId
-          ? await ctx.storage.getUrl(album.coverImageId)
-          : null,
-      }))
-    );
+    return albums;
   },
 });
 
@@ -88,7 +81,7 @@ export const create = mutation({
     });
 
     if (args.coverUrl) {
-      await ctx.scheduler.runAfter(0, (internal as any).images.storeCoverArt, {
+      await ctx.scheduler.runAfter(0, api.images.storeCoverArt, {
         albumId: newAlbumId,
         coverUrl: args.coverUrl,
       });
