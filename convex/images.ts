@@ -12,12 +12,33 @@ export const getUrl = query({
 export const storeCoverArt = action({
   args: {
     albumId: v.id("albums"),
-    coverUrl: v.string(),
+    coverUrl: v.optional(v.string()),
+    musicBrainzId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { albumId, coverUrl } = args;
+    const { albumId, musicBrainzId } = args;
+    let coverUrl = args.coverUrl;
+
+    if (!coverUrl && musicBrainzId) {
+      // Try to fetch from Cover Art Archive using MBID
+      // This redirects to the actual image if it exists
+      coverUrl = `https://coverartarchive.org/release-group/${musicBrainzId}/front`;
+    }
+
+    if (!coverUrl) {
+      console.error("No cover URL or MusicBrainz ID provided");
+      return;
+    }
+
     try {
       const response = await fetch(coverUrl);
+      if (!response.ok) {
+        console.error(
+          `Failed to fetch cover art: ${response.status} ${response.statusText}`
+        );
+        return;
+      }
+
       const blob = await response.blob();
       const storageId = await ctx.storage.store(blob);
 

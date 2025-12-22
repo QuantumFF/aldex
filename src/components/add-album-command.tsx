@@ -23,7 +23,7 @@ import {
   type MusicBrainzReleaseGroup,
 } from "@/lib/musicbrainz";
 import { cn, generateRymLink } from "@/lib/utils";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { Disc, Loader2, Search } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -44,6 +44,7 @@ export function AddAlbumCommand() {
   const addToLibraryButtonRef = React.useRef<HTMLButtonElement>(null);
 
   const createAlbum = useMutation(api.albums.create);
+  const storeCoverArt = useAction(api.images.storeCoverArt);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -91,13 +92,15 @@ export function AddAlbumCommand() {
     setLoadingCover(true);
     setCoverUrl(null);
 
-    try {
-      // Fetch cover art
-      const cover = await getAlbumCover(album.id);
-      setCoverUrl(cover);
-    } finally {
-      setLoadingCover(false);
-    }
+    // Fetch cover art in background for preview
+    // We don't await this so the UI is responsive immediately
+    getAlbumCover(album.id)
+      .then((cover) => {
+        if (cover) setCoverUrl(cover);
+      })
+      .finally(() => {
+        setLoadingCover(false);
+      });
   };
 
   const handleAdd = async (acquisition: "library" | "wishlist") => {
@@ -106,7 +109,7 @@ export function AddAlbumCommand() {
 
     try {
       const artist = selectedAlbum["artist-credit"]?.[0]?.name || "";
-      await createAlbum({
+      const albumId = await createAlbum({
         title: selectedAlbum.title,
         artist,
         releaseYear: selectedAlbum["first-release-date"]
@@ -116,14 +119,37 @@ export function AddAlbumCommand() {
         progress: acquisition === "library" ? "backlog" : undefined,
         isArchived: false,
         musicBrainzId: selectedAlbum.id,
-        coverUrl: coverUrl || undefined,
+        // We don't pass coverUrl here to avoid the server-side auto-fetch
+        // We will handle it manually below to show progress
         rymLink: generateRymLink(artist, selectedAlbum.title),
       });
 
-      toast.success("Album added successfully");
       setConfirmOpen(false);
       setSelectedAlbum(null);
       setCoverUrl(null);
+
+      // Start background fetch with toast
+      toast.promise(
+        async () => {
+          // 1. Try to get URL from client-side cache/fetch if we have it
+          let url = coverUrl;
+          if (!url) {
+            url = await getAlbumCover(selectedAlbum.id);
+          }
+
+          // 2. Call the action to store it
+          await storeCoverArt({
+            albumId,
+            coverUrl: url || undefined,
+            musicBrainzId: selectedAlbum.id,
+          });
+        },
+        {
+          loading: "Album added! Fetching cover art... (Keep browser open)",
+          success: "Cover art updated successfully",
+          error: "Album added, but failed to fetch cover art",
+        }
+      );
     } catch (error) {
       console.error("Failed to add album", error);
       const message =
@@ -238,7 +264,7 @@ export function AddAlbumCommand() {
                 ref={addToLibraryButtonRef}
                 className="flex-1"
                 onClick={() => handleAdd("library")}
-                disabled={adding || loadingCover}
+                disabled={adding}
               >
                 {adding ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -249,7 +275,7 @@ export function AddAlbumCommand() {
                 variant="secondary"
                 className="flex-1"
                 onClick={() => handleAdd("wishlist")}
-                disabled={adding || loadingCover}
+                disabled={adding}
               >
                 Add to Wishlist
               </Button>

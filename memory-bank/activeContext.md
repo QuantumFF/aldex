@@ -32,7 +32,7 @@ We are refining the core user interface to be more minimalist and album-centric.
     - **Year Input:** Created a custom `YearInput` component with `+` / `-` buttons for consistent data entry.
     - **Checkbox:** Switched to `shadcn/ui` Checkbox for the "Archived" toggle in the edit dialog.
 20. **Performance Optimization:**
-    - **Non-Blocking Add Album:** Refactored the "Add Album" workflow to be non-blocking. The client now sends the external image URL directly to the backend, which then handles the download and storage in a background Convex Action. This eliminates the slow double-hop (External -> Client -> Convex) and makes the UI feel instant.
+    - **Non-Blocking Add Album:** Refactored the "Add Album" workflow to be non-blocking. The client immediately adds the album to the library and then orchestrates a background fetch for the cover art via a Convex Action. A persistent toast notification keeps the user informed of the background process ("Fetching cover art..."), ensuring a responsive UI while maintaining data completeness.
     - **Lazy Image Loading:** Refactored the main album query to return only `storageId` instead of resolving signed URLs for every album. Created a dedicated `AlbumCover` component that fetches image URLs individually on demand. This eliminates the N+1 query bottleneck on the backend and drastically improves initial page load and refresh performance.
 
 ## Development Preferences
