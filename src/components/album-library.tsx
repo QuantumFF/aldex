@@ -10,8 +10,6 @@ import { EditAlbumDialog } from "./edit-album-dialog";
 
 export function AlbumLibrary() {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    allAlbums,
     filteredAlbums,
     view,
     setView,
