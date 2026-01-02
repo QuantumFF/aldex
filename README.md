@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# Aldex
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Aldex** is a personal, desktop-first web application for tracking music albums. It is an opinionated tool designed for the user who values manual control, intentional logging, and a private digital shelf over automation or social features.
 
-Currently, two official plugins are available:
+## Core Philosophy
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Albums are the only first-class entity.**
+- **Low Friction > Feature Completeness.**
+- **Manual Control > Automation.**
+- **Desktop-First UX.**
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Single-View Dashboard:** A unified "Album Library" view acting as the central hub without complex navigation menus.
+- **Dynamic Grid:** Adjustable album grid density (2-10 columns) to suit screen size and preference.
+- **Lifecycle Management:** Distinct workflows for acquisition and listening progress:
+  - **Acquisition:** Wishlist vs. Library (Owned).
+  - **Progress:** Backlog, Active (listening), Completed.
+  - **Visibility:** Archive toggle to hide albums from default views.
+- **Fast Browsing:** Optimized for quick filtering and visual scanning.
+- **External Integration:** Seamless links to MusicBrainz and RateYourMusic without compromising privacy.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Runtime:** [Bun](https://bun.sh/)
+- **Frontend:** [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Backend/Database:** [Convex](https://www.convex.dev/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **Routing:** [TanStack Router](https://tanstack.com/router)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- [Bun](https://bun.sh/) installed on your machine.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clone the repository:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```bash
+   git clone <repository-url>
+   cd aldex
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   bun install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   bun run dev
+   ```
+
+4. In a separate terminal, start the Convex backend:
+
+   ```bash
+   bun run convex
+   ```
+
+## Project Structure
+
+- `src/components`: React components, including UI primitives and feature-specific components.
+- `convex`: Backend functions and schema definitions.
+- `memory-bank`: Project documentation and context files.
