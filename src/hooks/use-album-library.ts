@@ -276,5 +276,21 @@ export function useAlbumLibrary() {
     toggleBatchMode,
     handleSelectAll,
     handleBatchApply,
+    deleteAlbum: async (id: string) => {
+      if (
+        !confirm(
+          "Are you sure you want to delete this album? This cannot be undone."
+        )
+      )
+        return;
+
+      try {
+        await batchDelete({ ids: [id as Id<"albums">] });
+        toast.success("Album deleted");
+      } catch (error) {
+        toast.error("Failed to delete album");
+        console.error(error);
+      }
+    },
   };
 }

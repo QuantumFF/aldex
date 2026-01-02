@@ -8,6 +8,7 @@
 - [x] Album Library View (Grid/List toggle, Responsive columns)
 - [x] Filtering & Sorting (Search, Acquisition status, Progress status)
 - [x] Edit Album Details (Dialog, Form validation)
+- [x] Context Menu & Quick Actions (Right-click, 3-dot menu, RYM link)
 - [x] Batch Actions (Select multiple, Delete, Archive, Change Status/Progress)
 - [x] Batch Edit Redesign (Right-aligned options, Staged updates, Smart defaults)
 - [x] Theme Support (Dark/Light mode)

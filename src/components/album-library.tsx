@@ -33,6 +33,7 @@ export function AlbumLibrary() {
     toggleBatchMode,
     handleBatchApply,
     handleSelectAll,
+    deleteAlbum,
   } = useAlbumLibrary();
 
   const getTitle = () => {
@@ -103,6 +104,7 @@ export function AlbumLibrary() {
           selectedAlbumIds={selectedAlbumIds}
           onAlbumClick={handleEditAlbum}
           onToggleSelection={toggleSelection}
+          onDelete={deleteAlbum}
         />
       ) : (
         <AlbumList
@@ -112,6 +114,7 @@ export function AlbumLibrary() {
           onAlbumClick={handleEditAlbum}
           onToggleSelection={toggleSelection}
           onSelectAll={handleSelectAll}
+          onDelete={deleteAlbum}
         />
       )}
 

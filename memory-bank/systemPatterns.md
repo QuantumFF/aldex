@@ -22,6 +22,9 @@
 - **Action Overlays:** Secondary actions (like visiting an external link) are presented as hover-only overlays on the primary album art to maintain a clean aesthetic.
 - **Notifications:** We use `sonner` for toast notifications to provide non-intrusive feedback for actions like adding, editing, or deleting albums.
 - **Batch Operations:** We use a **client-side selection state** (`Set<string>`) combined with **batch mutations** (`batchDelete`, `batchUpdate`) to perform bulk actions. The UI toggles between a standard view and a "Batch Mode" view, where interactions (click) change from "Edit" to "Select". Shift-Select is supported for range selection using `lastSelectedId` tracking.
+- **Context Menus & Overlays:**
+  - **Separated Triggers:** To prevent conflicts between nested interactive elements (like a card-wide context menu and a specific menu button), we separate their triggers in the DOM. The 3-dot menu button is positioned absolutely over the card but is a sibling to the card's context menu trigger, ensuring clean event handling.
+  - **Unified Menu Content:** We use a shared `AlbumMenuContent` component to ensure consistency between the right-click context menu and the 3-dot dropdown menu.
 
 ## Data Model Boundaries
 
