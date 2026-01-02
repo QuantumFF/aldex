@@ -30,10 +30,8 @@ export function AlbumLibrary() {
     handleEditAlbum,
     toggleSelection,
     handleBatchDelete,
-    handleBatchArchive,
-    handleBatchStatusChange,
-    handleBatchProgressChange,
     toggleBatchMode,
+    handleBatchApply,
     handleSelectAll,
   } = useAlbumLibrary();
 
@@ -53,24 +51,24 @@ export function AlbumLibrary() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <h2 className="text-2xl font-bold tracking-tight">{getTitle()}</h2>
-          {isBatchMode && (
-            <BatchActions
-              selectedCount={selectedAlbumIds.size}
-              onSelectAll={handleSelectAll}
-              isAllSelected={
-                filteredAlbums.length > 0 &&
-                selectedAlbumIds.size === filteredAlbums.length
-              }
-              onStatusChange={handleBatchStatusChange}
-              onProgressChange={handleBatchProgressChange}
-              onArchive={handleBatchArchive}
-              onDelete={handleBatchDelete}
-              onCancel={toggleBatchMode}
-            />
-          )}
         </div>
 
-        {!isBatchMode && (
+        {isBatchMode ? (
+          <BatchActions
+            selectedCount={selectedAlbumIds.size}
+            selectedAlbums={filteredAlbums.filter((a) =>
+              selectedAlbumIds.has(a._id)
+            )}
+            onSelectAll={handleSelectAll}
+            isAllSelected={
+              filteredAlbums.length > 0 &&
+              selectedAlbumIds.size === filteredAlbums.length
+            }
+            onApply={handleBatchApply}
+            onDelete={handleBatchDelete}
+            onCancel={toggleBatchMode}
+          />
+        ) : (
           <AlbumFilters
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}

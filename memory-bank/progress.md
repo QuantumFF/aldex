@@ -1,33 +1,28 @@
 # Progress
 
-## Status
+## Completed Features
 
-- **Sprint 0 (Planning):** [Completed]
-  - Terminology locked.
-  - Stack defined.
-  - Schema strategy decided.
-- **Sprint 1 (Core Functionality):** [In Progress]
-  - Project initialization.
-  - Backend Setup (Schema & Basic CRUD): [Completed]
-  - Frontend Add Album Form: [Completed]
-  - UI Template Refactoring (Sidebar & Branding): [Completed]
-  - List View (Grid/Table with filtering): [Completed]
-  - Basic Dashboard Routing: [Completed]
-  - Search & Filter (Client-side): [Completed]
-  - Edit/Delete Actions: [Completed]
-  - **UI Redesign (Single View + Dynamic Grid):** [Completed]
-  - **Add Album Workflow (Command Palette):** [Completed]
-  - **Rating System Redesign:** [Completed]
-  - **RateYourMusic Integration:** [Completed]
-  - **Search Optimization (Popularity Sorting):** [Completed]
-  - **Duplicate Prevention:** [Completed]
-  - **Toast Notifications:** [Completed]
-  - **Archived Feature & View:** [Completed]
-  - **UI Refinements (Year Input, Checkbox):** [Completed]
-  - **Performance Optimization (Background Image Upload):** [Completed]
-  - **Performance Optimization (Lazy Image Loading):** [Completed]
-  - **Non-Blocking Add Album with Progress Toast:** [Completed]
-  - **Batch Operations (Edit, Delete, Archive, Status/Progress):** [Completed]
+- [x] Project Setup (Vite, React, TypeScript, Tailwind, Convex)
+- [x] Database Schema (Albums table)
+- [x] Album Addition (MusicBrainz integration, Cover art upload)
+- [x] Album Library View (Grid/List toggle, Responsive columns)
+- [x] Filtering & Sorting (Search, Acquisition status, Progress status)
+- [x] Edit Album Details (Dialog, Form validation)
+- [x] Batch Actions (Select multiple, Delete, Archive, Change Status/Progress)
+- [x] Batch Edit Redesign (Right-aligned options, Staged updates, Smart defaults)
+- [x] Theme Support (Dark/Light mode)
 
-  ## Known Issues / Constraints
-  - RateYourMusic (RYM) has no API; we only store links.
+## In Progress
+
+- [ ] Mobile Optimization (Refining touch interactions)
+
+## Planned Features
+
+- [ ] Statistics Dashboard (Listening habits, Genre breakdown)
+- [ ] Import/Export (CSV, JSON)
+- [ ] Social Features (Share lists - optional)
+- [ ] Advanced Filtering (Year range, Genre)
+
+## Known Issues
+
+- None currently tracked.

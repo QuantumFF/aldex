@@ -212,6 +212,27 @@ export function useAlbumLibrary() {
     }
   };
 
+  const handleBatchApply = async (updates: {
+    acquisition?: "library" | "wishlist";
+    progress?: "backlog" | "active" | "completed";
+    isArchived?: boolean;
+  }) => {
+    if (selectedAlbumIds.size === 0) return;
+
+    try {
+      await batchUpdate({
+        ids: Array.from(selectedAlbumIds) as Id<"albums">[],
+        updates,
+      });
+      toast.success(`Updated ${selectedAlbumIds.size} albums`);
+      setIsBatchMode(false);
+      setSelectedAlbumIds(new Set());
+    } catch (error) {
+      toast.error("Failed to update albums");
+      console.error(error);
+    }
+  };
+
   const toggleBatchMode = () => {
     setIsBatchMode(!isBatchMode);
     setSelectedAlbumIds(new Set());
@@ -254,5 +275,6 @@ export function useAlbumLibrary() {
     handleBatchProgressChange,
     toggleBatchMode,
     handleSelectAll,
+    handleBatchApply,
   };
 }

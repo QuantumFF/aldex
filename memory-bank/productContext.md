@@ -2,27 +2,22 @@
 
 ## Problem Statement
 
-Existing tools (RYM, Spotify, Last.fm) are either too social, too automated, or lack the specific "ownership vs. listening" workflow desired by the user. This app solves the need for a private, curated digital shelf.
+Music enthusiasts often struggle to track their album listening habits, backlog, and collection across multiple platforms. They need a centralized, dedicated space to manage their "to-listen" list, track progress, and rate albums, distinct from general streaming service libraries.
 
-## User Experience
+## Solution
 
-- **Single-View Dashboard:** A unified "Album Library" view that acts as the central hub. No complex navigation menus.
-- **Dynamic Grid:** Users can adjust the density of the album grid (2-10 columns) to suit their screen size and preference.
-- **Fast Browsing:** Optimized for quick filtering and visual scanning.
-- **Keyboard Friendly:** Desktop-first interactions.
-- **Intentionality:** Adding an album is a deliberate action, not a background sync.
-- **External Integration:** Seamless links to external databases (RateYourMusic) without compromising the private nature of the library.
+Aldex is a personal album index and backlog manager. It allows users to:
 
-## The Album Lifecycle (Mental Model)
+- **Track Collection:** Maintain a library of albums with status (Library, Wishlist) and progress (Backlog, Active, Completed).
+- **Manage Backlog:** Easily see what to listen to next.
+- **Batch Edit:** Efficiently manage multiple albums at once (Archive, Delete, Change Status/Progress) with a streamlined UI that supports staged updates and smart defaults.
+- **Rate & Review:** Add personal ratings and notes.
+- **Filter & Sort:** Organize the collection by various criteria.
 
-We separate **Acquisition** (owning) from **Progress** (listening) and **Visibility** (archiving).
+## User Experience Goals
 
-1. **Acquisition:**
-   - `Wishlist`: Do not own yet.
-   - `Library`: Owned/Downloaded.
-2. **Progress** (Only applicable if in Library):
-   - `Backlog`: Owned but not started.
-   - `Active`: Currently listening (rotation).
-   - `Completed`: Finished listening.
-3. **Visibility:**
-   - `Archived`: Hidden from default views (Boolean toggle).
+- **Simplicity:** Clean, minimal interface focused on the album art and essential data.
+- **Efficiency:** Quick actions for adding, editing, and moving albums between statuses.
+- **Visual Appeal:** Grid-based layout that highlights album covers.
+- **Responsiveness:** Works well on desktop and mobile devices.
+- **Stability:** Smooth transitions and layout stability during interactions (e.g., batch mode).
