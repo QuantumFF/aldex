@@ -45,6 +45,7 @@ export const storeCoverArt = action({
       await ctx.runMutation(internal.albums.updateCoverImageId, {
         albumId,
         storageId,
+        coverUrl,
       });
     } catch (error) {
       console.error("Failed to store cover art", error);

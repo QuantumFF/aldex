@@ -95,12 +95,13 @@ export const updateCoverImageId = internalMutation({
   args: {
     albumId: v.id("albums"),
     storageId: v.id("_storage"),
+    coverUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { albumId, storageId } = args;
+    const { albumId, storageId, coverUrl } = args;
     await ctx.db.patch(albumId, {
       coverImageId: storageId,
-      coverUrl: undefined, // Clear the URL once stored
+      coverUrl,
     });
   },
 });
@@ -113,6 +114,7 @@ export const update = mutation({
     artist: v.optional(v.string()),
     releaseYear: v.optional(v.number()),
     coverImageId: v.optional(v.id("_storage")),
+    coverUrl: v.optional(v.string()),
     acquisition: v.optional(
       v.union(v.literal("wishlist"), v.literal("library"))
     ),
