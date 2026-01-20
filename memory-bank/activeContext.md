@@ -4,8 +4,14 @@
 
 - Completed redesign of the Edit Album Dialog for a modern minimalist aesthetic.
 - Fixed issue where album cover URLs were not being persisted in the database.
+- Fixed redundant album art downloads and duplicate global albums caused by case sensitivity.
 
 ## Recent Changes
+
+- **Redundant Download Fix:**
+  - **Global Album Matching:** Improved the search logic in `convex/albums.ts` to handle case-insensitive Artist names. It now falls back to searching by Title (exact) and matching Artist (case-insensitive) if the primary search fails. This prevents duplicate global albums (e.g., "The Beatles" vs "the beatles").
+  - **Smart Downloads:** Updated `convex/albums.ts` to only trigger a backend download if a _new_ global album is created.
+  - **Action Optimization:** Updated `convex/images.ts` (`storeCoverArt`) to check if the album already has a cover (via a new internal query `getAlbumCoverStatus`) before downloading. This prevents frontend-triggered redundant downloads.
 
 - **Edit Album Dialog Redesign:**
   - Implemented a split-layout design with a prominent cover image preview on the left and a clean form on the right.

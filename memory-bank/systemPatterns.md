@@ -15,7 +15,8 @@
 - **Modals:** Critical actions like "Edit Album" are handled in modal dialogs to maintain context within the library view.
 - **Custom Inputs:** Specialized UI components (like `RatingInput`) are created to match specific design requirements (e.g., column width control style) rather than relying solely on standard HTML inputs.
 - **Images:**
-  - **Ingestion:** Images are handled via a **client-orchestrated background processing pattern**. The client creates the album immediately (for instant UI feedback) and then triggers a Convex Action (`storeCoverArt`) to fetch and store the image. This allows the client to display a persistent "progress toast" to the user, ensuring they know the background process is active.
+  - **Ingestion:** Images are handled via a **client-orchestrated background processing pattern**. The client creates the album immediately (for instant UI feedback) and then triggers a Convex Action (`storeCoverArt`) to fetch and store the image.
+    - **Redundancy Check:** To prevent redundant downloads (e.g., if the album already exists or multiple users add it simultaneously), the `storeCoverArt` action first checks the album's cover status via an internal query (`getAlbumCoverStatus`). If a cover exists, the download is skipped.
   - **Display:** We use a **lazy loading pattern** for display. The main album query returns only the `storageId`. The frontend `AlbumCover` component then fetches the signed URL for each image individually using a dedicated query (`images.getUrl`). This prevents N+1 query bottlenecks on the backend and ensures fast initial page loads.
 - **Search:** Search is hybrid—MusicBrainz for initial metadata (via Command Palette), internal Convex search for library browsing. **MusicBrainz search results are sorted by popularity (release count) and type (Album > EP) to improve relevance.**
 - **External Link Generation:** We automatically generate external links (like RateYourMusic) using slugification logic on artist/album names, favoring automation with manual override.
@@ -29,6 +30,10 @@
 ## Data Model Boundaries
 
 - **Albums:** The central collection. **Uniqueness is enforced on `musicBrainzId` to prevent duplicates.**
+  - **Matching Strategy:** To prevent duplicate global albums when `musicBrainzId` is missing or unavailable, we use a robust matching strategy:
+    1.  Exact match on `musicBrainzId`.
+    2.  Exact match on `artist` + Case-insensitive match on `title`.
+    3.  Exact match on `title` + Case-insensitive match on `artist`.
 - **State Machine:**
   - `Wishlist` -> `Library` (Implicitly `Backlog` if progress is unset)
   - `Backlog` -> `Active`

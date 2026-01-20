@@ -2,20 +2,27 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  // Global Album Catalog (Shared Data)
   albums: defineTable({
-    // Core Metadata
     title: v.string(),
     artist: v.string(),
     releaseYear: v.optional(v.number()),
-
-    // Image stored in Convex Storage
     coverImageId: v.optional(v.id("_storage")),
     coverUrl: v.optional(v.string()),
+    musicBrainzId: v.optional(v.string()),
+    genres: v.optional(v.array(v.string())),
+  })
+    .index("by_musicBrainzId", ["musicBrainzId"])
+    .index("by_artist", ["artist"])
+    .index("by_title", ["title"]),
+
+  // User Library Entries (User-Specific Data)
+  user_albums: defineTable({
+    userId: v.string(),
+    albumId: v.id("albums"), // Reference to the global album
 
     // Lifecycle State
-    // "acquisition" determines if we own it or want it.
     acquisition: v.union(v.literal("wishlist"), v.literal("library")),
-    // "progress" tracks listening status. Only relevant if acquisition is "library".
     progress: v.optional(
       v.union(
         v.literal("backlog"),
@@ -24,29 +31,21 @@ export default defineSchema({
       ),
     ),
 
-    // Visibility: specific toggle to hide from default views without deleting
+    // Visibility
     isArchived: v.boolean(),
 
     // User Data
-    rating: v.optional(v.union(v.number(), v.null())), // 1-10 or 1-5 scale
+    rating: v.optional(v.union(v.number(), v.null())),
     rymLink: v.optional(v.string()),
     notes: v.optional(v.string()),
 
-    // External Metadata
-    musicBrainzId: v.optional(v.string()),
-    genres: v.optional(v.array(v.string())),
-
-    // User Identity
-    userId: v.string(),
-
     // Timestamps
-    addedAt: v.number(), // Date.now() when created
-    completedAt: v.optional(v.number()), // Date.now() when marked completed
+    addedAt: v.number(),
+    completedAt: v.optional(v.number()),
   })
-    .index("by_acquisition", ["userId", "acquisition"])
-    .index("by_progress", ["userId", "progress"])
-    .index("by_artist", ["userId", "artist"])
-    .index("by_addedAt", ["userId", "addedAt"])
-    .index("by_musicBrainzId", ["userId", "musicBrainzId"])
-    .index("by_userId", ["userId"]),
+    .index("by_userId", ["userId"])
+    .index("by_userId_acquisition", ["userId", "acquisition"])
+    .index("by_userId_progress", ["userId", "progress"])
+    .index("by_albumId", ["albumId"]) // Useful for finding who has a specific album
+    .index("by_userId_albumId", ["userId", "albumId"]), // Ensure uniqueness per user
 });

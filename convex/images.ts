@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 import { action, query } from "./_generated/server";
 
 export const getUrl = query({
@@ -11,12 +12,23 @@ export const getUrl = query({
 
 export const storeCoverArt = action({
   args: {
-    albumId: v.id("albums"),
+    albumId: v.string(),
     coverUrl: v.optional(v.string()),
     musicBrainzId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { albumId, musicBrainzId } = args;
+
+    // Check if the album already has a cover
+    const status = await ctx.runQuery(internal.albums.getAlbumCoverStatus, {
+      albumId,
+    });
+
+    if (status.hasCover) {
+      console.log("Album already has a cover, skipping download");
+      return;
+    }
+
     let coverUrl = args.coverUrl;
 
     if (!coverUrl && musicBrainzId) {
@@ -34,7 +46,7 @@ export const storeCoverArt = action({
       const response = await fetch(coverUrl);
       if (!response.ok) {
         console.error(
-          `Failed to fetch cover art: ${response.status} ${response.statusText}`
+          `Failed to fetch cover art: ${response.status} ${response.statusText}`,
         );
         return;
       }
@@ -43,7 +55,7 @@ export const storeCoverArt = action({
       const storageId = await ctx.storage.store(blob);
 
       await ctx.runMutation(internal.albums.updateCoverImageId, {
-        albumId,
+        albumId: albumId as Id<"albums">,
         storageId,
         coverUrl,
       });

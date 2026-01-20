@@ -13,6 +13,7 @@
 - [x] Batch Edit Redesign (Right-aligned options, Staged updates, Smart defaults)
 - [x] Theme Support (Dark/Light mode)
 - [x] Cover URL Persistence (Backend & Frontend support)
+- [x] Redundant Download Fix (Case-insensitive matching, Smart actions)
 
 ## In Progress
 
