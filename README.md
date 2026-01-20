@@ -67,3 +67,7 @@
 - `src/components`: React components, including UI primitives and feature-specific components.
 - `convex`: Backend functions and schema definitions.
 - `memory-bank`: Project documentation and context files.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0.
