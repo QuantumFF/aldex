@@ -8,7 +8,7 @@ import { AlbumList } from "./album-list";
 import { BatchActions } from "./batch-actions";
 import { EditAlbumDialog } from "./edit-album-dialog";
 
-export function AlbumLibrary() {
+export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
   const {
     filteredAlbums,
     view,
@@ -58,7 +58,7 @@ export function AlbumLibrary() {
           <BatchActions
             selectedCount={selectedAlbumIds.size}
             selectedAlbums={filteredAlbums.filter((a) =>
-              selectedAlbumIds.has(a._id)
+              selectedAlbumIds.has(a._id),
             )}
             onSelectAll={handleSelectAll}
             isAllSelected={
@@ -83,7 +83,9 @@ export function AlbumLibrary() {
             setColumnCount={setColumnCount}
             isBatchMode={isBatchMode}
             toggleBatchMode={toggleBatchMode}
-          />
+          >
+            {children}
+          </AlbumFilters>
         )}
       </div>
 

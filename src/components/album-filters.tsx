@@ -24,6 +24,7 @@ interface AlbumFiltersProps {
   setColumnCount: (count: number) => void;
   isBatchMode: boolean;
   toggleBatchMode: () => void;
+  children?: React.ReactNode;
 }
 
 export function AlbumFilters({
@@ -39,6 +40,7 @@ export function AlbumFilters({
   setColumnCount,
   isBatchMode,
   toggleBatchMode,
+  children,
 }: AlbumFiltersProps) {
   return (
     <div className="flex flex-1 flex-col gap-2 md:flex-row md:items-center md:justify-end">
@@ -169,6 +171,7 @@ export function AlbumFilters({
         </Button>
 
         <AddAlbumCommand />
+        {children}
       </div>
     </div>
   );

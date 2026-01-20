@@ -6,28 +6,45 @@ import { internalMutation, mutation, query } from "./_generated/server";
 export const get = query({
   args: {
     acquisition: v.optional(
-      v.union(v.literal("wishlist"), v.literal("library"))
+      v.union(v.literal("wishlist"), v.literal("library")),
     ),
     progress: v.optional(
-      v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
+      v.union(
+        v.literal("backlog"),
+        v.literal("active"),
+        v.literal("completed"),
+      ),
     ),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+    const userId = identity.subject;
+
     const { acquisition, progress } = args;
     const albums = await (async () => {
       if (progress) {
         return await ctx.db
           .query("albums")
-          .withIndex("by_progress", (q) => q.eq("progress", progress))
+          .withIndex("by_progress", (q) =>
+            q.eq("userId", userId).eq("progress", progress),
+          )
           .collect();
       }
       if (acquisition) {
         return await ctx.db
           .query("albums")
-          .withIndex("by_acquisition", (q) => q.eq("acquisition", acquisition))
+          .withIndex("by_acquisition", (q) =>
+            q.eq("userId", userId).eq("acquisition", acquisition),
+          )
           .collect();
       }
-      return await ctx.db.query("albums").collect();
+      return await ctx.db
+        .query("albums")
+        .withIndex("by_userId", (q) => q.eq("userId", userId))
+        .collect();
     })();
 
     return albums;
@@ -52,7 +69,11 @@ export const create = mutation({
     coverUrl: v.optional(v.string()),
     acquisition: v.union(v.literal("wishlist"), v.literal("library")),
     progress: v.optional(
-      v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
+      v.union(
+        v.literal("backlog"),
+        v.literal("active"),
+        v.literal("completed"),
+      ),
     ),
     isArchived: v.boolean(),
     rating: v.optional(v.union(v.number(), v.null())),
@@ -62,11 +83,17 @@ export const create = mutation({
     genres: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called create without authentication");
+    }
+    const userId = identity.subject;
+
     if (args.musicBrainzId) {
       const existing = await ctx.db
         .query("albums")
         .withIndex("by_musicBrainzId", (q) =>
-          q.eq("musicBrainzId", args.musicBrainzId)
+          q.eq("userId", userId).eq("musicBrainzId", args.musicBrainzId),
         )
         .first();
 
@@ -77,6 +104,7 @@ export const create = mutation({
 
     const newAlbumId = await ctx.db.insert("albums", {
       ...args,
+      userId,
       addedAt: Date.now(),
     });
 
@@ -116,10 +144,14 @@ export const update = mutation({
     coverImageId: v.optional(v.id("_storage")),
     coverUrl: v.optional(v.string()),
     acquisition: v.optional(
-      v.union(v.literal("wishlist"), v.literal("library"))
+      v.union(v.literal("wishlist"), v.literal("library")),
     ),
     progress: v.optional(
-      v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
+      v.union(
+        v.literal("backlog"),
+        v.literal("active"),
+        v.literal("completed"),
+      ),
     ),
     isArchived: v.optional(v.boolean()),
     rating: v.optional(v.union(v.number(), v.null())),
@@ -130,7 +162,18 @@ export const update = mutation({
     completedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called update without authentication");
+    }
+    const userId = identity.subject;
+
     const { id, ...updates } = args;
+    const existing = await ctx.db.get(id);
+    if (!existing || existing.userId !== userId) {
+      throw new Error("Album not found or unauthorized");
+    }
+
     await ctx.db.patch(id, updates);
   },
 });
@@ -139,6 +182,17 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("albums") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called remove without authentication");
+    }
+    const userId = identity.subject;
+
+    const existing = await ctx.db.get(args.id);
+    if (!existing || existing.userId !== userId) {
+      throw new Error("Album not found or unauthorized");
+    }
+
     await ctx.db.delete(args.id);
   },
 });
@@ -147,6 +201,18 @@ export const remove = mutation({
 export const batchDelete = mutation({
   args: { ids: v.array(v.id("albums")) },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called batchDelete without authentication");
+    }
+    const userId = identity.subject;
+
+    const albums = await Promise.all(args.ids.map((id) => ctx.db.get(id)));
+    const unauthorized = albums.some((a) => !a || a.userId !== userId);
+    if (unauthorized) {
+      throw new Error("Some albums not found or unauthorized");
+    }
+
     await Promise.all(args.ids.map((id) => ctx.db.delete(id)));
   },
 });
@@ -157,20 +223,31 @@ export const batchUpdate = mutation({
     ids: v.array(v.id("albums")),
     updates: v.object({
       acquisition: v.optional(
-        v.union(v.literal("wishlist"), v.literal("library"))
+        v.union(v.literal("wishlist"), v.literal("library")),
       ),
       progress: v.optional(
         v.union(
           v.literal("backlog"),
           v.literal("active"),
-          v.literal("completed")
-        )
+          v.literal("completed"),
+        ),
       ),
       isArchived: v.optional(v.boolean()),
     }),
   },
   handler: async (ctx, args) => {
-    const { ids, updates } = args;
-    await Promise.all(ids.map((id) => ctx.db.patch(id, updates)));
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Called batchUpdate without authentication");
+    }
+    const userId = identity.subject;
+
+    const albums = await Promise.all(args.ids.map((id) => ctx.db.get(id)));
+    const unauthorized = albums.some((a) => !a || a.userId !== userId);
+    if (unauthorized) {
+      throw new Error("Some albums not found or unauthorized");
+    }
+
+    await Promise.all(args.ids.map((id) => ctx.db.patch(id, args.updates)));
   },
 });

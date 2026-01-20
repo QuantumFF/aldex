@@ -17,7 +17,11 @@ export default defineSchema({
     acquisition: v.union(v.literal("wishlist"), v.literal("library")),
     // "progress" tracks listening status. Only relevant if acquisition is "library".
     progress: v.optional(
-      v.union(v.literal("backlog"), v.literal("active"), v.literal("completed"))
+      v.union(
+        v.literal("backlog"),
+        v.literal("active"),
+        v.literal("completed"),
+      ),
     ),
 
     // Visibility: specific toggle to hide from default views without deleting
@@ -32,13 +36,17 @@ export default defineSchema({
     musicBrainzId: v.optional(v.string()),
     genres: v.optional(v.array(v.string())),
 
+    // User Identity
+    userId: v.string(),
+
     // Timestamps
     addedAt: v.number(), // Date.now() when created
     completedAt: v.optional(v.number()), // Date.now() when marked completed
   })
-    .index("by_acquisition", ["acquisition"])
-    .index("by_progress", ["progress"])
-    .index("by_artist", ["artist"])
-    .index("by_addedAt", ["addedAt"])
-    .index("by_musicBrainzId", ["musicBrainzId"]),
+    .index("by_acquisition", ["userId", "acquisition"])
+    .index("by_progress", ["userId", "progress"])
+    .index("by_artist", ["userId", "artist"])
+    .index("by_addedAt", ["userId", "addedAt"])
+    .index("by_musicBrainzId", ["userId", "musicBrainzId"])
+    .index("by_userId", ["userId"]),
 });
