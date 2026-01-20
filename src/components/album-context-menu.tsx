@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { UserAlbum } from "@/lib/types";
 import {
   CheckSquare,
   Edit,
@@ -20,22 +21,19 @@ import {
   MoreHorizontal,
   Trash2,
 } from "lucide-react";
-import type { Doc } from "../../convex/_generated/dataModel";
-
-type Album = Doc<"albums"> & { rymLink?: string };
 
 interface AlbumContextMenuProps {
   children: React.ReactNode;
-  album: Album;
-  onEdit: (album: Album) => void;
+  album: UserAlbum;
+  onEdit: (album: UserAlbum) => void;
   onDelete: (id: string) => void;
   onToggleSelection: (id: string) => void;
   isSelected: boolean;
 }
 
 interface AlbumMenuContentProps {
-  album: Album;
-  onEdit: (album: Album) => void;
+  album: UserAlbum;
+  onEdit: (album: UserAlbum) => void;
   onDelete: (id: string) => void;
   onToggleSelection: (id: string) => void;
   isSelected: boolean;
@@ -108,8 +106,8 @@ export function AlbumContextMenu({
 }
 
 interface AlbumDropdownMenuProps {
-  album: Album;
-  onEdit: (album: Album) => void;
+  album: UserAlbum;
+  onEdit: (album: UserAlbum) => void;
   onDelete: (id: string) => void;
   onToggleSelection: (id: string) => void;
   isSelected: boolean;

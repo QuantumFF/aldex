@@ -2,24 +2,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Doc } from "../../convex/_generated/dataModel";
+import type { UserAlbum } from "@/lib/types";
 import { AlbumContextMenu, AlbumDropdownMenu } from "./album-context-menu";
 import { AlbumCover } from "./album-cover";
 
-// Define a type that matches what we expect (Doc<"albums"> plus optional coverImageId if not in schema, but it is)
-// Actually, let's just use Doc<"albums"> and extend if needed.
-// In album-library.tsx, it uses `allAlbums` which is `Doc<"albums">[]`.
-// But `AlbumWithCover` in edit-album-dialog is `Doc<"albums"> & { coverUrl?: string }`.
-// The grid uses `album.coverImageId`.
-
-type Album = Doc<"albums"> & { rymLink?: string }; // rymLink is in schema? Yes.
-
 interface AlbumGridProps {
-  albums: Album[];
+  albums: UserAlbum[];
   columnCount: number;
   isBatchMode: boolean;
   selectedAlbumIds: Set<string>;
-  onAlbumClick: (album: Album, e: React.MouseEvent) => void;
+  onAlbumClick: (album: UserAlbum, e: React.MouseEvent) => void;
   onToggleSelection: (id: string) => void;
   onDelete: (id: string) => void;
 }

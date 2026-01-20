@@ -1,4 +1,4 @@
-import type { AlbumWithCover } from "@/components/edit-album-dialog";
+import type { UserAlbum } from "@/lib/types";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -34,13 +34,13 @@ export function useAlbumLibrary() {
     setColumnCount(newCount);
   }, [width]);
 
-  const [editingAlbum, setEditingAlbum] = useState<AlbumWithCover | null>(null);
+  const [editingAlbum, setEditingAlbum] = useState<UserAlbum | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   // Batch Mode State
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [selectedAlbumIds, setSelectedAlbumIds] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [lastSelectedId, setLastSelectedId] = useState<string | null>(null);
 
@@ -101,7 +101,7 @@ export function useAlbumLibrary() {
 
     if (isShiftPressed && lastSelectedId && lastSelectedId !== id) {
       const lastIndex = filteredAlbums.findIndex(
-        (a) => a._id === lastSelectedId
+        (a) => a._id === lastSelectedId,
       );
       const currentIndex = filteredAlbums.findIndex((a) => a._id === id);
 
@@ -125,8 +125,8 @@ export function useAlbumLibrary() {
   };
 
   const handleEditAlbum = (
-    album: AlbumWithCover,
-    e?: React.MouseEvent | React.KeyboardEvent
+    album: UserAlbum,
+    e?: React.MouseEvent | React.KeyboardEvent,
   ) => {
     if (isBatchMode) {
       const isShiftPressed = e && "shiftKey" in e && e.shiftKey;
@@ -141,14 +141,14 @@ export function useAlbumLibrary() {
     if (selectedAlbumIds.size === 0) return;
     if (
       !confirm(
-        `Are you sure you want to delete ${selectedAlbumIds.size} albums? This cannot be undone.`
+        `Are you sure you want to delete ${selectedAlbumIds.size} albums? This cannot be undone.`,
       )
     )
       return;
 
     try {
       await batchDelete({
-        ids: Array.from(selectedAlbumIds) as Id<"albums">[],
+        ids: Array.from(selectedAlbumIds) as Id<"user_albums">[],
       });
       toast.success(`Deleted ${selectedAlbumIds.size} albums`);
       setIsBatchMode(false);
@@ -164,7 +164,7 @@ export function useAlbumLibrary() {
 
     try {
       await batchUpdate({
-        ids: Array.from(selectedAlbumIds) as Id<"albums">[],
+        ids: Array.from(selectedAlbumIds) as Id<"user_albums">[],
         updates: { isArchived: true },
       });
       toast.success(`Archived ${selectedAlbumIds.size} albums`);
@@ -181,7 +181,7 @@ export function useAlbumLibrary() {
 
     try {
       await batchUpdate({
-        ids: Array.from(selectedAlbumIds) as Id<"albums">[],
+        ids: Array.from(selectedAlbumIds) as Id<"user_albums">[],
         updates: { acquisition: status },
       });
       toast.success(`Updated status for ${selectedAlbumIds.size} albums`);
@@ -194,13 +194,13 @@ export function useAlbumLibrary() {
   };
 
   const handleBatchProgressChange = async (
-    progress: "backlog" | "active" | "completed"
+    progress: "backlog" | "active" | "completed",
   ) => {
     if (selectedAlbumIds.size === 0) return;
 
     try {
       await batchUpdate({
-        ids: Array.from(selectedAlbumIds) as Id<"albums">[],
+        ids: Array.from(selectedAlbumIds) as Id<"user_albums">[],
         updates: { progress },
       });
       toast.success(`Updated progress for ${selectedAlbumIds.size} albums`);
@@ -221,7 +221,7 @@ export function useAlbumLibrary() {
 
     try {
       await batchUpdate({
-        ids: Array.from(selectedAlbumIds) as Id<"albums">[],
+        ids: Array.from(selectedAlbumIds) as Id<"user_albums">[],
         updates,
       });
       toast.success(`Updated ${selectedAlbumIds.size} albums`);
@@ -279,13 +279,13 @@ export function useAlbumLibrary() {
     deleteAlbum: async (id: string) => {
       if (
         !confirm(
-          "Are you sure you want to delete this album? This cannot be undone."
+          "Are you sure you want to delete this album? This cannot be undone.",
         )
       )
         return;
 
       try {
-        await batchDelete({ ids: [id as Id<"albums">] });
+        await batchDelete({ ids: [id as Id<"user_albums">] });
         toast.success("Album deleted");
       } catch (error) {
         toast.error("Failed to delete album");

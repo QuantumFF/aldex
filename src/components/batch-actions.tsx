@@ -1,4 +1,3 @@
-import type { AlbumWithCover } from "@/components/edit-album-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,12 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { UserAlbum } from "@/lib/types";
 import { Trash2, X } from "lucide-react";
 import { useState } from "react";
 
 interface BatchActionsProps {
   selectedCount: number;
-  selectedAlbums: AlbumWithCover[];
+  selectedAlbums: UserAlbum[];
   onSelectAll: () => void;
   isAllSelected: boolean;
   onApply: (updates: {
@@ -44,7 +44,7 @@ export function BatchActions({
     "backlog" | "active" | "completed" | undefined
   >();
   const [userArchived, setUserArchived] = useState<boolean | undefined>(
-    undefined
+    undefined,
   );
 
   // Calculate defaults based on selection

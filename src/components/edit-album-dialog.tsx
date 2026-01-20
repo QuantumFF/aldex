@@ -1,12 +1,13 @@
 "use client";
 
+import type { UserAlbum } from "@/lib/types";
 import { albumSchema, type AlbumFormValues } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../../convex/_generated/api";
-import type { Doc, Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 import {
   AlertDialog,
@@ -43,10 +44,8 @@ import { toast } from "sonner";
 import { RatingInput } from "./ui/rating-input";
 import { YearInput } from "./ui/year-input";
 
-export type AlbumWithCover = Doc<"albums">;
-
 interface EditAlbumDialogProps {
-  album: AlbumWithCover | null;
+  album: UserAlbum | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -131,7 +130,7 @@ export function EditAlbumDialog({
       }
 
       const updateArgs: {
-        id: Id<"albums">;
+        id: Id<"user_albums">;
         title: string;
         artist: string;
         releaseYear?: number;
@@ -181,7 +180,7 @@ export function EditAlbumDialog({
     if (!album) return;
     setIsDeleting(true);
     try {
-      await deleteAlbum({ id: album._id as Id<"albums"> });
+      await deleteAlbum({ id: album._id });
       toast.success("Album deleted successfully");
       onOpenChange(false);
     } catch (error) {

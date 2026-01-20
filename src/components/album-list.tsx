@@ -8,17 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Doc } from "../../convex/_generated/dataModel";
+import type { UserAlbum } from "@/lib/types";
 import { AlbumContextMenu, AlbumDropdownMenu } from "./album-context-menu";
 import { AlbumCover } from "./album-cover";
 
-type Album = Doc<"albums"> & { rymLink?: string };
-
 interface AlbumListProps {
-  albums: Album[];
+  albums: UserAlbum[];
   isBatchMode: boolean;
   selectedAlbumIds: Set<string>;
-  onAlbumClick: (album: Album, e: React.MouseEvent) => void;
+  onAlbumClick: (album: UserAlbum, e: React.MouseEvent) => void;
   onToggleSelection: (id: string) => void;
   onSelectAll: () => void;
   onDelete: (id: string) => void;
