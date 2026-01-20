@@ -148,7 +148,7 @@ export function AddAlbumCommand() {
           loading: "Album added! Fetching cover art... (Keep browser open)",
           success: "Cover art updated successfully",
           error: "Album added, but failed to fetch cover art",
-        }
+        },
       );
     } catch (error) {
       console.error("Failed to add album", error);
@@ -168,7 +168,7 @@ export function AddAlbumCommand() {
         variant="outline"
         className={cn(
           "relative h-9 w-9 p-0 md:h-9 md:w-40 md:justify-start md:px-3 md:py-2 lg:w-64",
-          "text-sm text-muted-foreground"
+          "text-sm text-muted-foreground",
         )}
         onClick={() => setOpen(true)}
       >
@@ -304,10 +304,7 @@ export function AddAlbumCommand() {
       </Dialog>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit & Add Album</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-[850px] p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh] md:h-[600px]">
           {selectedAlbum && (
             <AddAlbumForm
               initialData={{
@@ -320,7 +317,7 @@ export function AddAlbumCommand() {
                 coverUrl: coverUrl || "",
                 rymLink: generateRymLink(
                   selectedAlbum["artist-credit"]?.[0]?.name || "",
-                  selectedAlbum.title
+                  selectedAlbum.title,
                 ),
               }}
               onSuccess={() => {

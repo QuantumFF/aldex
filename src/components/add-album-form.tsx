@@ -14,6 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import { api } from "../../convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Combobox,
   ComboboxContent,
@@ -22,12 +23,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -37,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Disc, ImagePlus, Loader2 } from "lucide-react";
 
 interface AddAlbumFormProps {
   initialData?: Partial<AlbumFormValues>;
@@ -47,7 +43,7 @@ interface AddAlbumFormProps {
 export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<MusicBrainzReleaseGroup[]>(
-    []
+    [],
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -133,11 +129,11 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
   };
 
   const watchAcquisition = form.watch("acquisition");
+  const watchCoverUrl = form.watch("coverUrl");
 
-  return (
-    <div className="space-y-6">
-      {/* Search Section - Only show if no initial data provided */}
-      {!initialData && (
+  if (!initialData) {
+    return (
+      <div className="space-y-6">
         <div className="space-y-2">
           <FieldLabel>Search MusicBrainz</FieldLabel>
           <div className="flex gap-2">
@@ -188,110 +184,196 @@ export function AddAlbumForm({ initialData, onSuccess }: AddAlbumFormProps) {
             </Button>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field>
-            <FieldLabel>Title</FieldLabel>
-            <Input {...form.register("title")} />
-            <FieldError errors={[form.formState.errors.title]} />
-          </Field>
-
-          <Field>
-            <FieldLabel>Artist</FieldLabel>
-            <Input {...form.register("artist")} />
-            <FieldError errors={[form.formState.errors.artist]} />
-          </Field>
-
-          <Field>
-            <FieldLabel>Year</FieldLabel>
-            <Input
-              type="number"
-              {...form.register("releaseYear", { valueAsNumber: true })}
+  return (
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="flex flex-col md:flex-row h-full"
+    >
+      {/* Left Column: Visuals */}
+      <div className="w-full md:w-[320px] bg-muted/30 border-b md:border-b-0 md:border-r flex flex-col p-6 gap-6 shrink-0">
+        <div className="aspect-square w-full rounded-xl overflow-hidden border bg-background shadow-sm relative group">
+          {watchCoverUrl ? (
+            <img
+              src={watchCoverUrl}
+              alt="Album cover"
+              className="w-full h-full object-cover"
             />
-            <FieldError errors={[form.formState.errors.releaseYear]} />
-          </Field>
-
-          <Field>
-            <FieldLabel>Acquisition Status</FieldLabel>
-            <Controller
-              control={form.control}
-              name="acquisition"
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="wishlist">Wishlist</SelectItem>
-                    <SelectItem value="library">Library (Owned)</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <FieldError errors={[form.formState.errors.acquisition]} />
-          </Field>
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/50">
+              <Disc className="w-16 h-16 opacity-20" />
+              <span className="text-xs mt-2 font-medium opacity-50">
+                No Cover
+              </span>
+            </div>
+          )}
         </div>
 
-        {watchAcquisition === "library" && (
+        <div className="space-y-4">
           <Field>
-            <FieldLabel>Listening Progress</FieldLabel>
-            <Controller
-              control={form.control}
-              name="progress"
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value || "backlog"}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select progress" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="backlog">
-                      Backlog (Not Started)
-                    </SelectItem>
-                    <SelectItem value="active">Active (Listening)</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
+            <FieldLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+              Cover Image URL
+            </FieldLabel>
+            <div className="relative">
+              <ImagePlus className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                {...form.register("coverUrl")}
+                placeholder="Paste image URL..."
+                className="pl-9 bg-background"
+              />
+            </div>
+            <FieldError errors={[form.formState.errors.coverUrl]} />
           </Field>
-        )}
 
-        <Field>
-          <FieldLabel>Cover Image URL</FieldLabel>
-          <Input {...form.register("coverUrl")} placeholder="https://..." />
-          <FieldDescription>
-            Auto-filled from search or paste manually.
-          </FieldDescription>
-          <FieldError errors={[form.formState.errors.coverUrl]} />
-        </Field>
+          <div className="p-4 rounded-lg bg-background border space-y-3">
+            <Field>
+              <div className="flex items-center justify-between">
+                <FieldLabel className="text-xs font-medium">
+                  Archived
+                </FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="isArchived"
+                  render={({ field }) => (
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Hidden from default library views
+              </p>
+            </Field>
+          </div>
+        </div>
+      </div>
 
-        <Field>
-          <FieldLabel>RYM Link</FieldLabel>
-          <Input
-            {...form.register("rymLink")}
-            placeholder="https://rateyourmusic.com/..."
-          />
-          <FieldError errors={[form.formState.errors.rymLink]} />
-        </Field>
+      {/* Right Column: Form */}
+      <div className="flex-1 flex flex-col min-w-0 bg-background">
+        <div className="px-6 py-4 border-b shrink-0">
+          <h2 className="text-base font-medium text-muted-foreground">
+            Edit & Add Album
+          </h2>
+        </div>
 
-        <Field>
-          <FieldLabel>Notes</FieldLabel>
-          <Textarea {...form.register("notes")} />
-        </Field>
+        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+          {/* Primary Info */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                {...form.register("title")}
+                className="text-2xl font-bold border-0 px-3 py-2 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
+                placeholder="Album Title"
+              />
+              <Input
+                {...form.register("artist")}
+                className="text-lg font-medium text-muted-foreground border-0 px-3 py-2 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
+                placeholder="Artist Name"
+              />
+            </div>
+            <div className="h-px bg-border/50 w-full" />
+          </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
-          Add Album
-        </Button>
-      </form>
-    </div>
+          {/* Metadata Grid */}
+          <div className="grid grid-cols-2 gap-6">
+            <Field>
+              <FieldLabel>Release Year</FieldLabel>
+              <Input
+                type="number"
+                {...form.register("releaseYear", { valueAsNumber: true })}
+              />
+              <FieldError errors={[form.formState.errors.releaseYear]} />
+            </Field>
+
+            <Field>
+              <FieldLabel>Acquisition Status</FieldLabel>
+              <Controller
+                control={form.control}
+                name="acquisition"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="wishlist">Wishlist</SelectItem>
+                      <SelectItem value="library">Library (Owned)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <FieldError errors={[form.formState.errors.acquisition]} />
+            </Field>
+
+            {watchAcquisition === "library" && (
+              <Field>
+                <FieldLabel>Listening Progress</FieldLabel>
+                <Controller
+                  control={form.control}
+                  name="progress"
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value || "backlog"}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select progress" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="backlog">
+                          Backlog (Not Started)
+                        </SelectItem>
+                        <SelectItem value="active">
+                          Active (Listening)
+                        </SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </Field>
+            )}
+          </div>
+
+          {/* Additional Details */}
+          <div className="space-y-4">
+            <Field>
+              <FieldLabel>Notes</FieldLabel>
+              <Textarea
+                {...form.register("notes")}
+                className="min-h-[100px] resize-none bg-muted/10"
+                placeholder="Add personal notes, review, or thoughts..."
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>RYM Link</FieldLabel>
+              <Input
+                {...form.register("rymLink")}
+                placeholder="https://rateyourmusic.com/..."
+                className="font-mono text-xs"
+              />
+              <FieldError errors={[form.formState.errors.rymLink]} />
+            </Field>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-4 border-t bg-muted/10 flex justify-end items-center shrink-0">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+            Add Album
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }

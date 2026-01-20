@@ -65,7 +65,7 @@ export function EditAlbumDialog({
 
   const signedCoverUrl = useQuery(
     api.images.getUrl,
-    album?.coverImageId ? { storageId: album.coverImageId } : "skip"
+    album?.coverImageId ? { storageId: album.coverImageId } : "skip",
   );
 
   const form = useForm<AlbumFormValues>({
@@ -195,8 +195,14 @@ export function EditAlbumDialog({
   const watchAcquisition = form.watch("acquisition");
   const watchCoverUrl = form.watch("coverUrl");
 
-  // Determine which image to show: new URL > existing signed URL > existing URL > placeholder
-  const displayImage = watchCoverUrl || signedCoverUrl || album?.coverUrl;
+  // Determine which image to show:
+  // 1. If user changed the URL input, show that (preview)
+  // 2. If we have a stored image (signedCoverUrl), show that (backend source)
+  // 3. Fallback to the form's current value (original URL)
+  const isCoverUrlChanged = watchCoverUrl !== (album?.coverUrl || "");
+  const displayImage = isCoverUrlChanged
+    ? watchCoverUrl
+    : signedCoverUrl || watchCoverUrl;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -285,12 +291,12 @@ export function EditAlbumDialog({
                 <div className="space-y-2">
                   <Input
                     {...form.register("title")}
-                    className="text-2xl font-bold border-0 px-0 h-auto rounded-none focus-visible:ring-0 placeholder:text-muted-foreground/50"
+                    className="text-2xl font-bold border-0 px-3 py-2 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
                     placeholder="Album Title"
                   />
                   <Input
                     {...form.register("artist")}
-                    className="text-lg font-medium text-muted-foreground border-0 px-0 h-auto rounded-none focus-visible:ring-0 placeholder:text-muted-foreground/50"
+                    className="text-lg font-medium text-muted-foreground border-0 px-3 py-2 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
                     placeholder="Artist Name"
                   />
                 </div>
