@@ -22,9 +22,9 @@ export function AlbumSortControls({
   setSortOrder,
 }: AlbumSortControlsProps) {
   return (
-    <div className="flex items-center gap-1 bg-background border rounded-md p-1">
+    <div className="flex items-center gap-1 bg-background border rounded-md overflow-hidden">
       <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-        <SelectTrigger className="h-7 w-[120px] border-none shadow-none text-xs focus:ring-0">
+        <SelectTrigger className="h-9 w-[120px] border-none shadow-none text-xs focus:ring-0 py-0 rounded-none">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
@@ -50,10 +50,11 @@ export function AlbumSortControls({
           </SelectItem>
         </SelectContent>
       </Select>
+      <div className="w-px h-5 bg-border shrink-0" />
       <Button
         variant="ghost"
         size="icon"
-        className="h-7 w-7 rounded-sm"
+        className="h-9 w-9 rounded-none"
         onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
         title={sortOrder === "asc" ? "Ascending" : "Descending"}
       >

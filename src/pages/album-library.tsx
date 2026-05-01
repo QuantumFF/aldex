@@ -54,72 +54,70 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-3 shrink-0">
-          <h2 className="text-2xl font-bold tracking-tight">{getTitle()}</h2>
-        </div>
-
-        <AnimatePresence mode="wait">
-          {isBatchMode ? (
-            <motion.div
-              key="batch"
-              initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 24 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            >
-              <BatchActions
-                selectedCount={selectedAlbumIds.size}
-                selectedAlbums={filteredAlbums.filter((a: any) =>
-                  selectedAlbumIds.has(a._id),
-                )}
-                onSelectAll={handleSelectAll}
-                isAllSelected={
-                  filteredAlbums.length > 0 &&
-                  selectedAlbumIds.size === filteredAlbums.length
-                }
-                onApply={handleBatchApply}
-                onDelete={handleBatchDelete}
-                onCancel={toggleBatchMode}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="filters"
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-            >
-              <AlbumFilters
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                acquisitionFilter={acquisitionFilter}
-                setAcquisitionFilter={setAcquisitionFilter}
-                progressFilter={progressFilter}
-                setProgressFilter={setProgressFilter}
-                view={view}
-                setView={setView}
-                columnCount={columnCount}
-                setColumnCount={setColumnCount}
-                isBatchMode={isBatchMode}
-                toggleBatchMode={toggleBatchMode}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* User button — always pinned to the far right */}
+      {/* Row 1: Title + User button — never wraps, always shares the same line */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold tracking-tight shrink-0">{getTitle()}</h2>
         {children && (
-          <div className="ml-auto shrink-0">
+          <div className="shrink-0 flex items-center">
             {children}
           </div>
         )}
       </div>
+
+      {/* Row 2: Filter controls / batch actions — can wrap independently */}
+      <AnimatePresence mode="wait">
+        {isBatchMode ? (
+          <motion.div
+            key="batch"
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 24 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <BatchActions
+              selectedCount={selectedAlbumIds.size}
+              selectedAlbums={filteredAlbums.filter((a: any) =>
+                selectedAlbumIds.has(a._id),
+              )}
+              onSelectAll={handleSelectAll}
+              isAllSelected={
+                filteredAlbums.length > 0 &&
+                selectedAlbumIds.size === filteredAlbums.length
+              }
+              onApply={handleBatchApply}
+              onDelete={handleBatchDelete}
+              onCancel={toggleBatchMode}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="filters"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            <AlbumFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              acquisitionFilter={acquisitionFilter}
+              setAcquisitionFilter={setAcquisitionFilter}
+              progressFilter={progressFilter}
+              setProgressFilter={setProgressFilter}
+              view={view}
+              setView={setView}
+              columnCount={columnCount}
+              setColumnCount={setColumnCount}
+              isBatchMode={isBatchMode}
+              toggleBatchMode={toggleBatchMode}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {filteredAlbums.length === 0 ? (
