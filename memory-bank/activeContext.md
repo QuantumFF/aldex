@@ -2,74 +2,60 @@
 
 ## Current Focus
 
-- Completed redesign of the Edit Album Dialog for a modern minimalist aesthetic.
-- Enhanced the entire frontend UI/UX with a bold "Editorial / Refined Minimalist" aesthetic using `Instrument Serif`.
-- Integrated Clerk authentication with the Shadcn theme.
-- Added staggered entrance animations to grid and list views.
+- Mobile UI/UX polishing across all dialogs and menus.
+- Context menu enrichment (sub-menus, batch mode integration).
+- Component reuse/extraction (DeleteAlbumDialog).
 
 ## Recent Changes
 
-- **Bulk Add Albums Feature:**
-  - Implemented `BulkAddAlbumsDialog` with dual modes: Text List and Search & Select.
-  - Text List allows users to paste a list of albums (one per line).
-  - Search & Select allows users to search MusicBrainz, stage multiple albums, and bulk import them.
-  - Integrates with background cover art processing and added to the album filters bar.
+### Mobile UI/UX Overhaul
+- **`dialog.tsx`:** Changed `sm:rounded-lg` → always `rounded-lg`; added `w-[calc(100%-2rem)]` to ensure 1rem side margins on all dialogs regardless of viewport width.
+- **`command.tsx`:** Added `rounded-xl mx-3 sm:mx-auto w-[calc(100%-1.5rem)] sm:w-full` to command palette dialog to prevent edge clipping.
+- **`add-album-command.tsx` (confirm dialog):**
+  - Mobile (<sm): compact card layout — 80×80 thumbnail + title/artist/year in a row.
+  - Desktop (sm+): dramatic full-bleed hero with gradient overlay.
+  - Footer replaced `DialogFooter` (which injects `sm:flex-row`) with a plain `div` using `flex flex-col gap-2` to keep 2×2 button grid stable at all viewport widths.
+- **`edit-album-dialog.tsx`:**
+  - `max-h-[90svh]` to prevent overflow on small screens.
+  - Mobile: compact `h-36` banner + URL/Archived toggle row.
+  - Desktop (md+): retains full two-column sidebar.
+  - Footer: 2-col grid (Cancel + Save) on mobile; justify-between with Delete on left on desktop.
+- **`bulk-add-albums-dialog.tsx`:** Added `w-[calc(100%-2rem)]` mobile width.
 
-- **Frontend UI/UX Enhancements:**
-  - Integrated `@fontsource/instrument-serif` for striking headings, creating an editorial feel.
-  - Redesigned the Landing Page (`landing-page.tsx`) with a bold hero section, grid background pattern, and refined typography.
-  - Improved album card UX (`album-grid.tsx`) with smoother hover states (shadows, slight lifts) and better typographic hierarchy between Title and Artist.
-  - Added staggered entrance animations (`tw-animate-css` fade-in and slide-in) to both grid and list views for a more delightful loading experience.
-  - Updated Clerk `UserButton` and `SignInButton` to use the Shadcn theme via `@clerk/themes/shadcn.css` to match the rest of the application.
+### DeleteAlbumDialog Component (`src/components/delete-album-dialog.tsx`)
+- Reusable confirmation dialog with two modes:
+  - **Trigger mode** (`children` prop): wraps any button in `AlertDialogTrigger` automatically.
+  - **Controlled mode** (`open` + `onOpenChange`): for context/dropdown menus where the dialog must live outside the menu portal to survive menu close.
+- Replaces inline AlertDialog trees in `edit-album-dialog.tsx` (trigger mode) and `batch-actions.tsx` (trigger mode).
+- Used in `album-context-menu.tsx` (controlled mode) via local `deleteOpen` state in both `AlbumContextMenu` and `AlbumDropdownMenu`.
 
-- **Redundant Download Fix:**
-  - **Global Album Matching:** Improved the search logic in `convex/albums.ts` to handle case-insensitive Artist names. It now falls back to searching by Title (exact) and matching Artist (case-insensitive) if the primary search fails. This prevents duplicate global albums (e.g., "The Beatles" vs "the beatles").
-  - **Smart Downloads:** Updated `convex/albums.ts` to only trigger a backend download if a _new_ global album is created.
-  - **Action Optimization:** Updated `convex/images.ts` (`storeCoverArt`) to check if the album already has a cover (via a new internal query `getAlbumCoverStatus`) before downloading. This prevents frontend-triggered redundant downloads.
+### Context Menu Enhancements (`src/components/album-context-menu.tsx`)
+- **"Select" → Batch Mode:** Added `onSelectFromMenu` prop (distinct from `onToggleSelection`). When called, parent checks `isBatchMode` and enables it first, then selects the album. Threaded through `AlbumGrid`, `AlbumList`, and `AlbumLibrary`.
+  - `handleSelectFromMenu` in `album-library.tsx`: `if (!isBatchMode) toggleBatchMode(); toggleSelection(id);`
+- **Acquisition sub-menu:** Library / Wishlist with current-value checkmark (✓).
+- **Progress sub-menu:** Backlog / Active / Completed with checkmark; only shown when `acquisition === "library"`.
+- Both sub-menus fire `useMutation(api.albums.update)` directly inside `AlbumMenuContent` — no extra prop drilling.
+- Sub-menu components are polymorphic: `ContextMenuSub`/`DropdownMenuSub` selected by `type` prop.
+- View on RYM item moved below the sub-menus with a separator.
 
-- **Backend Performance Optimization:**
-  - Added `normalizedTitle` and `normalizedArtist` fields to the `albums` schema with a compound index `by_normalized_artist_and_title`.
-  - Updated the `create` mutation to use this index for duplicate matching, replacing inefficient JavaScript filtering and `.collect()` calls.
-  - Removed redundant single-field indexes to reduce write overhead.
-
-- **Edit Album Dialog Redesign:**
-  - Implemented a split-layout design with a prominent cover image preview on the left and a clean form on the right.
-  - Improved typography and visual hierarchy for Title and Artist fields.
-  - Grouped metadata fields (Year, Rating, Status) for better readability.
-  - Moved "Delete" action to a subtle ghost button to prevent accidental clicks.
-  - Added logic to preview the cover image from multiple sources (new input, stored image, source URL).
-
-- **Cover URL Persistence:**
-  - **Backend:** Updated `convex/albums.ts` and `convex/images.ts` to ensure the source `coverUrl` is saved to the database even when an image is uploaded to storage. Previously, this URL was being cleared, causing the input field to be blank on subsequent edits.
-  - **Frontend:** Updated `EditAlbumDialog` to pre-fill the "Cover Image URL" field with the saved URL, allowing users to see and edit the source link.
-
-- **Context Menu Implementation:**
-  - Added a right-click context menu to albums in both Grid and List views.
-  - Added a 3-dot menu button (top-right in Grid, separate column in List) for accessibility.
-  - Menu options include: Edit, Select/Deselect, View on RYM, and Delete.
-  - Restored the direct RYM link icon on the album card (bottom-right) for quick access.
-  - **Refactoring:** Separated the 3-dot menu trigger from the main card context menu trigger in the Grid view to prevent event conflicts and ensure reliable interaction.
-
-- **Batch Edit Redesign:**
-  - Moved batch action controls to the right side of the header to minimize mouse movement and replace filters.
-  - Fixed a 1-pixel layout shift by ensuring the batch actions container matches the height of the filters container.
-  - Replaced immediate-action dropdowns with a staged "Apply" workflow.
-  - Added an "Apply" button to commit changes.
-  - Replaced the "Archive" button with a smart "Archived" checkbox that supports unarchiving and defaults to the common state of selected items.
-  - Added clickable "Select All" label.
-  - Standardized button heights and improved responsiveness.
+### Filter Label Fix
+- `album-status-filters.tsx`: progress filter "Done" label renamed to "Completed" for consistency with the data model.
 
 ## Active Decisions
 
-- **Persisting Source URLs:** We decided to keep the original `coverUrl` in the database even after the image is uploaded to Convex Storage. This allows the UI to display the source link to the user for reference or editing, addressing user feedback about "missing" URLs.
-- **Separated Menu Triggers:** To avoid conflicts between the card-wide right-click context menu and the specific 3-dot menu button, we moved the 3-dot button outside the context menu trigger area in the Grid view. This ensures that interactions with the button (left or right click) do not inadvertently trigger the card's context menu or get swallowed by it.
-- **Staged Batch Updates:** Moving from immediate actions to a "pending changes" model for batch editing allows users to set multiple properties (Status, Progress, Archived) at once and apply them in a single transaction, reducing API calls and improving control.
-- **Smart Defaults:** Batch edit controls now initialize based on the selected items. If all selected items share a value (e.g., all archived), the control reflects that. If mixed, it shows a neutral state. This makes it easier to toggle states (e.g., unarchive a group of archived albums).
+- **No `DialogFooter` for custom layouts:** `DialogFooter` injects `sm:flex-row sm:justify-end` which overrides column layouts at >=640px. Custom multi-row button groups use plain `div` with explicit `flex flex-col`.
+- **`svh` units for dialog height:** Uses `max-h-[90svh]` (small viewport height) to avoid content being hidden behind mobile browser chrome.
+- **Controlled delete dialog outside menu portal:** When the delete confirmation is triggered from a context/dropdown menu, the `AlertDialog` must be a sibling outside the menu (not inside `ContextMenuContent`), otherwise it gets unmounted when the menu closes.
+- **`useMutation` in `AlbumMenuContent`:** Direct mutation call avoids threading acquisition/progress update callbacks through 3+ layers of props.
+- **Persisting Source URLs:** Keep original `coverUrl` in the database even after image upload to Convex Storage.
+- **Separated Menu Triggers:** 3-dot button is a DOM sibling of the context menu trigger (not nested inside it) to prevent event conflicts in the Grid view.
+- **Staged Batch Updates:** Pending changes model — users set multiple properties then hit Apply.
+- **Smart Defaults:** Batch edit controls initialize based on the selected items' common state.
 
 ## Current State
 
-- The application allows users to view, filter, and manage their album collection.
-- Batch mode is fully functional with the new UI.
-- Users can add albums, edit details (with new minimalist UI), and manage their backlog.
-- Albums have comprehensive context menu support for quick actions.
-- Cover art handling is robust, preserving source URLs.
+- All dialogs are mobile-responsive with consistent rounded corners and viewport-safe heights.
+- Context/dropdown menus support: Edit, Select (+ enter batch), Acquisition, Progress, View on RYM, Delete (with confirmation).
+- Batch mode is fully functional with confirmation on destructive delete.
+- `DeleteAlbumDialog` is the canonical delete confirmation component used across all delete surfaces.
+- Build is clean (no TypeScript errors); only known warning is chunk size >500 kB.

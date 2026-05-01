@@ -13,19 +13,31 @@
 - **Forms:** React Hook Form + Zod. Validation logic is shared or mirrored between UI and Backend where possible.
 - **Command Palette:** The "Add Album" workflow uses a `cmdk`-based command palette for quick, keyboard-first interactions. It integrates live search (MusicBrainz) and confirmation dialogs into a seamless flow.
 - **Modals:** Critical actions like "Edit Album" are handled in modal dialogs to maintain context within the library view.
-- **Custom Inputs:** Specialized UI components (like `RatingInput`) are created to match specific design requirements (e.g., column width control style) rather than relying solely on standard HTML inputs.
+- **Custom Inputs:** Specialized UI components (like `RatingInput`) are created to match specific design requirements rather than relying solely on standard HTML inputs.
 - **Images:**
   - **Ingestion:** Images are handled via a **client-orchestrated background processing pattern**. The client creates the album immediately (for instant UI feedback) and then triggers a Convex Action (`storeCoverArt`) to fetch and store the image.
-    - **Redundancy Check:** To prevent redundant downloads (e.g., if the album already exists or multiple users add it simultaneously), the `storeCoverArt` action first checks the album's cover status via an internal query (`getAlbumCoverStatus`). If a cover exists, the download is skipped.
-  - **Display:** We use a **lazy loading pattern** for display. The main album query returns only the `storageId`. The frontend `AlbumCover` component then fetches the signed URL for each image individually using a dedicated query (`images.getUrl`). This prevents N+1 query bottlenecks on the backend and ensures fast initial page loads.
+    - **Redundancy Check:** The `storeCoverArt` action first checks the album's cover status via an internal query (`getAlbumCoverStatus`). If a cover exists, the download is skipped.
+  - **Display:** We use a **lazy loading pattern** for display. The main album query returns only the `storageId`. The frontend `AlbumCover` component then fetches the signed URL for each image individually using a dedicated query (`images.getUrl`).
 - **Search:** Search is hybrid—MusicBrainz for initial metadata (via Command Palette), internal Convex search for library browsing. **MusicBrainz search results are sorted by popularity (release count) and type (Album > EP) to improve relevance.**
 - **External Link Generation:** We automatically generate external links (like RateYourMusic) using slugification logic on artist/album names, favoring automation with manual override.
 - **Action Overlays:** Secondary actions (like visiting an external link) are presented as hover-only overlays on the primary album art to maintain a clean aesthetic.
-- **Notifications:** We use `sonner` for toast notifications to provide non-intrusive feedback for actions like adding, editing, or deleting albums.
+- **Notifications:** We use `sonner` for toast notifications.
 - **Batch Operations:** We use a **client-side selection state** (`Set<string>`) combined with **batch mutations** (`batchDelete`, `batchUpdate`) to perform bulk actions. The UI toggles between a standard view and a "Batch Mode" view, where interactions (click) change from "Edit" to "Select". Shift-Select is supported for range selection using `lastSelectedId` tracking.
-- **Context Menus & Overlays:**
-  - **Separated Triggers:** To prevent conflicts between nested interactive elements (like a card-wide context menu and a specific menu button), we separate their triggers in the DOM. The 3-dot menu button is positioned absolutely over the card but is a sibling to the card's context menu trigger, ensuring clean event handling.
-  - **Unified Menu Content:** We use a shared `AlbumMenuContent` component to ensure consistency between the right-click context menu and the 3-dot dropdown menu.
+
+## Context Menus & Overlays
+
+- **Separated Triggers:** To prevent conflicts between nested interactive elements (card-wide context menu vs. 3-dot button), the 3-dot button is a DOM sibling of the `ContextMenuTrigger` — not nested inside it.
+- **Unified Menu Content:** A shared `AlbumMenuContent` component ensures consistency between the right-click context menu and the 3-dot dropdown menu. It is polymorphic — it selects `ContextMenuItem` vs `DropdownMenuItem` (and Sub variants) based on a `type` prop.
+- **Delete confirmation outside portal:** The `DeleteAlbumDialog` (controlled mode) is rendered as a sibling outside `ContextMenuContent`/`DropdownMenuContent` using local `deleteOpen` state. This prevents it from being unmounted when the menu closes.
+- **Direct mutation in menu content:** `useMutation(api.albums.update)` is called directly inside `AlbumMenuContent` for quick Acquisition/Progress changes, avoiding prop-drilling through grid → context menu layers.
+- **Batch mode entry from menu:** "Select" in the context/dropdown menu calls `onSelectFromMenu`, which is provided by `AlbumLibrary` as: `if (!isBatchMode) toggleBatchMode(); toggleSelection(id);` This automatically activates batch mode when selecting from the menu.
+
+## Dialog Patterns
+
+- **No `DialogFooter` for custom multi-row button layouts:** `DialogFooter` injects `sm:flex-row sm:justify-end` which collapses column layouts at >=640px. Use a plain `div` with `flex flex-col` instead.
+- **`svh` for dialog heights:** Use `max-h-[90svh]` (small viewport height) so dialogs don't hide behind mobile browser chrome.
+- **Mobile margin:** All `DialogContent` uses `w-[calc(100%-2rem)]` to maintain 1rem gutters on narrow screens.
+- **Responsive dialog bodies:** Mobile-first single-column layouts, desktop (md+) two-column sidebars via `hidden md:flex`.
 
 ## Data Model Boundaries
 
