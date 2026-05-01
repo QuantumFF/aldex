@@ -5,16 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
 } from "@/components/ui/command";
+import { AlbumSearchCommand } from "./album-search-command";
+import { useAlbumSearch } from "@/hooks/use-album-search";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   getAlbumCover,
-  searchAlbums,
   type MusicBrainzReleaseGroup,
 } from "@/lib/musicbrainz";
 import { cn, generateRymLink } from "@/lib/utils";
@@ -26,9 +22,7 @@ import { api } from "../../convex/_generated/api";
 
 export function AddAlbumCommand() {
   const [open, setOpen] = React.useState(false);
-  const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState<MusicBrainzReleaseGroup[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const { query, setQuery, results, loading } = useAlbumSearch();
   const [selectedAlbum, setSelectedAlbum] =
     React.useState<MusicBrainzReleaseGroup | null>(null);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -53,26 +47,7 @@ export function AddAlbumCommand() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  React.useEffect(() => {
-    if (!query) {
-      setResults([]);
-      return;
-    }
 
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const data = await searchAlbums(query);
-        setResults(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [query]);
 
   React.useEffect(() => {
     if (!loadingCover && confirmOpen && addToLibraryButtonRef.current) {
@@ -180,39 +155,13 @@ export function AddAlbumCommand() {
         onOpenChange={setOpen}
         commandProps={{ shouldFilter: false }}
       >
-        <CommandInput
-          placeholder="Search albums..."
-          value={query}
-          onValueChange={setQuery}
+        <AlbumSearchCommand
+          query={query}
+          onQueryChange={setQuery}
+          loading={loading}
+          results={results}
+          onSelect={handleSelect}
         />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          {loading && (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              Searching...
-            </div>
-          )}
-          {!loading && results.length > 0 && (
-            <CommandGroup heading="Suggestions">
-              {results.map((album) => (
-                <CommandItem
-                  key={album.id}
-                  value={album.id}
-                  onSelect={() => handleSelect(album)}
-                >
-                  <Disc className="mr-2 h-4 w-4" />
-                  <div className="flex flex-col">
-                    <span>{album.title}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {album["artist-credit"]?.[0]?.name} (
-                      {album["first-release-date"]?.split("-")[0]})
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-        </CommandList>
       </CommandDialog>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>

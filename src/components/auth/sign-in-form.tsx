@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSignIn } from "@clerk/clerk-react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import * as React from "react";
+import { OAuthButton } from "./oauth-button";
+import { AuthSeparator } from "./auth-separator";
+import { PasswordInput } from "./password-input";
 
 interface SignInFormProps {
   onSuccess: () => void;
@@ -17,7 +20,6 @@ export function SignInForm({ onSuccess, onToggleMode }: SignInFormProps) {
   const [newPassword, setNewPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
   const [step, setStep] = React.useState<"credentials" | "forgot_password" | "reset_password">("credentials");
 
   if (!isLoaded) {
@@ -222,25 +224,14 @@ export function SignInForm({ onSuccess, onToggleMode }: SignInFormProps) {
               maxLength={6}
               required
             />
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
+              <PasswordInput
                 placeholder="New password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={isLoading}
-                className="h-12 bg-muted/30 pr-10"
+                className="h-12 bg-muted/30"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
           </div>
 
           {error && (
@@ -281,33 +272,9 @@ export function SignInForm({ onSuccess, onToggleMode }: SignInFormProps) {
         </p>
       </div>
 
-      <div className="grid gap-4">
-        <Button 
-          variant="outline" 
-          type="button" 
-          disabled={isLoading}
-          onClick={() => handleOAuth("oauth_google")}
-          className="bg-background shadow-sm h-12"
-        >
-          {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path></svg>
-          )}
-          Continue with Google
-        </Button>
-      </div>
+      <OAuthButton isLoading={isLoading} onClick={handleOAuth} />
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase tracking-widest">
-          <span className="bg-background px-2 text-muted-foreground font-medium">
-            Or
-          </span>
-        </div>
-      </div>
+      <AuthSeparator />
 
       <form onSubmit={handleSignIn} className="space-y-4">
         <div className="space-y-3">
@@ -321,25 +288,14 @@ export function SignInForm({ onSuccess, onToggleMode }: SignInFormProps) {
             required
           />
           <div className="space-y-1">
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                className="h-12 bg-muted/30 pr-10"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
+            <PasswordInput
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              className="h-12 bg-muted/30"
+              required
+            />
             <div className="flex justify-end pt-1">
               <button
                 type="button"

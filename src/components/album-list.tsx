@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { UserAlbum } from "@/lib/types";
+import { motion } from "framer-motion";
 import { AlbumContextMenu, AlbumDropdownMenu } from "./album-context-menu";
 import { AlbumCover } from "./album-cover";
 
@@ -59,7 +60,7 @@ export function AlbumList({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {albums.map((album) => (
+          {albums.map((album, index) => (
             <AlbumContextMenu
               key={album._id}
               album={album}
@@ -68,13 +69,14 @@ export function AlbumList({
               onToggleSelection={onToggleSelection}
               isSelected={selectedAlbumIds.has(album._id)}
             >
-              <TableRow
-                className={`cursor-pointer transition-colors duration-300 hover:bg-muted/50 animate-in fade-in slide-in-from-bottom-2 duration-500 ${
-                  isBatchMode && selectedAlbumIds.has(album._id)
-                    ? "bg-muted"
-                    : ""
+              <motion.tr
+                className={`cursor-pointer transition-colors duration-300 hover:bg-muted/50 ${
+                  isBatchMode && selectedAlbumIds.has(album._id) ? "bg-muted" : ""
                 } ${isBatchMode ? "select-none" : ""}`}
-                onClick={(e) => onAlbumClick(album, e)}
+                onClick={(e) => onAlbumClick(album, e as any)}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut", delay: Math.min(index, 15) * 0.03 }}
               >
                 {isBatchMode && (
                   <TableCell>
@@ -128,7 +130,7 @@ export function AlbumList({
                     />
                   )}
                 </TableCell>
-              </TableRow>
+              </motion.tr>
             </AlbumContextMenu>
           ))}
         </TableBody>

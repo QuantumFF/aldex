@@ -3,8 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { UserAlbum } from "@/lib/types";
+import { AnimatePresence, motion } from "framer-motion";
 import { AlbumContextMenu, AlbumDropdownMenu } from "./album-context-menu";
 import { AlbumCover } from "./album-cover";
+
+const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+const STAGGER_CAP = 20;
+
+const containerVariants = {
+  show: { transition: { staggerChildren: 0.045 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: 12 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.28, ease: EASE },
+  },
+  exit: { opacity: 0, scale: 0.93, transition: { duration: 0.15 } },
+};
 
 interface AlbumGridProps {
   albums: UserAlbum[];
@@ -26,17 +45,24 @@ export function AlbumGrid({
   onDelete,
 }: AlbumGridProps) {
   return (
-    <div
+    <motion.div
       className="grid gap-4"
-      style={{
-        gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
-      }}
+      style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
     >
-      {albums.map((album) => (
-        <div 
-          key={album._id} 
-          className="relative group animate-in fade-in slide-in-from-bottom-4 duration-500"
-        >
+      <AnimatePresence mode="popLayout">
+        {albums.map((album, index) => (
+          <motion.div
+            key={album._id}
+            className="relative group"
+            variants={index < STAGGER_CAP ? itemVariants : undefined}
+            initial={index < STAGGER_CAP ? "hidden" : { opacity: 0 }}
+            animate={index < STAGGER_CAP ? "show" : { opacity: 1 }}
+            exit="exit"
+            layout
+          >
           <AlbumContextMenu
             album={album}
             onEdit={(a) => onAlbumClick(a, {} as React.MouseEvent)}
@@ -137,8 +163,9 @@ export function AlbumGrid({
               </div>
             </>
           )}
-        </div>
-      ))}
-    </div>
+        </motion.div>
+        ))}
+      </AnimatePresence>
+    </motion.div>
   );
 }

@@ -5,7 +5,7 @@ import { albumSchema, type AlbumFormValues } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -21,7 +21,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -29,20 +28,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Disc, ImagePlus, Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { RatingInput } from "./ui/rating-input";
-import { YearInput } from "./ui/year-input";
+import { AlbumFormDetails, AlbumFormSidebar } from "./shared-album-form-fields";
 
 interface EditAlbumDialogProps {
   album: UserAlbum | null;
@@ -191,7 +179,6 @@ export function EditAlbumDialog({
     }
   };
 
-  const watchAcquisition = form.watch("acquisition");
   const watchCoverUrl = form.watch("coverUrl");
 
   // Determine which image to show:
@@ -207,66 +194,8 @@ export function EditAlbumDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[850px] p-0 gap-0 overflow-hidden flex flex-col md:flex-row max-h-[90vh] md:h-[600px]">
         {/* Left Column: Visuals */}
-        <div className="w-full md:w-[320px] bg-muted/30 border-b md:border-b-0 md:border-r flex flex-col p-6 gap-6 shrink-0">
-          <div className="aspect-square w-full rounded-xl overflow-hidden border bg-background shadow-sm relative group">
-            {displayImage ? (
-              <img
-                src={displayImage}
-                alt="Album cover"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/50">
-                <Disc className="w-16 h-16 opacity-20" />
-                <span className="text-xs mt-2 font-medium opacity-50">
-                  No Cover
-                </span>
-              </div>
-            )}
-
-            {/* Overlay hint */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none" />
-          </div>
-
-          <div className="space-y-4">
-            <Field>
-              <FieldLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                Cover Image URL
-              </FieldLabel>
-              <div className="relative">
-                <ImagePlus className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  {...form.register("coverUrl")}
-                  placeholder="Paste image URL..."
-                  className="pl-9 bg-background"
-                />
-              </div>
-              <FieldError errors={[form.formState.errors.coverUrl]} />
-            </Field>
-
-            <div className="p-4 rounded-lg bg-background border space-y-3">
-              <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel className="text-xs font-medium">
-                    Archived
-                  </FieldLabel>
-                  <Controller
-                    control={form.control}
-                    name="isArchived"
-                    render={({ field }) => (
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    )}
-                  />
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  Hidden from default library views
-                </p>
-              </Field>
-            </div>
-          </div>
+        <div className="w-full md:w-[320px] bg-muted/30 border-b md:border-b-0 md:border-r flex flex-col p-6 gap-6 shrink-0 md:overflow-y-auto">
+          <AlbumFormSidebar form={form} coverPreviewUrl={displayImage} />
         </div>
 
         {/* Right Column: Form */}
@@ -285,127 +214,7 @@ export function EditAlbumDialog({
             className="flex-1 flex flex-col min-h-0"
           >
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
-              {/* Primary Info */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    {...form.register("title")}
-                    className="text-2xl font-bold border-0 px-3 py-2 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
-                    placeholder="Album Title"
-                  />
-                  <Input
-                    {...form.register("artist")}
-                    className="text-lg font-medium text-muted-foreground border-0 px-3 py-2 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/50"
-                    placeholder="Artist Name"
-                  />
-                </div>
-                <div className="h-px bg-border/50 w-full" />
-              </div>
-
-              {/* Metadata Grid */}
-              <div className="grid grid-cols-2 gap-6">
-                <Field>
-                  <FieldLabel>Release Year</FieldLabel>
-                  <Controller
-                    control={form.control}
-                    name="releaseYear"
-                    render={({ field }) => (
-                      <YearInput
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  <FieldError errors={[form.formState.errors.releaseYear]} />
-                </Field>
-
-                <Field>
-                  <FieldLabel>Rating</FieldLabel>
-                  <Controller
-                    control={form.control}
-                    name="rating"
-                    render={({ field }) => (
-                      <RatingInput
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </Field>
-              </div>
-
-              {/* Status Section */}
-              <div className="grid grid-cols-2 gap-6 p-4 bg-muted/30 rounded-lg border border-border/50">
-                <Field>
-                  <FieldLabel>Status</FieldLabel>
-                  <Controller
-                    control={form.control}
-                    name="acquisition"
-                    render={({ field }) => (
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="wishlist">Wishlist</SelectItem>
-                          <SelectItem value="library">
-                            Library (Owned)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </Field>
-
-                {watchAcquisition === "library" && (
-                  <Field>
-                    <FieldLabel>Progress</FieldLabel>
-                    <Controller
-                      control={form.control}
-                      name="progress"
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value || "backlog"}
-                        >
-                          <SelectTrigger className="bg-background">
-                            <SelectValue placeholder="Select progress" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="backlog">Backlog</SelectItem>
-                            <SelectItem value="active">Listening</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </Field>
-                )}
-              </div>
-
-              {/* Additional Details */}
-              <div className="space-y-4">
-                <Field>
-                  <FieldLabel>Notes</FieldLabel>
-                  <Textarea
-                    {...form.register("notes")}
-                    className="min-h-[100px] resize-none bg-muted/10"
-                    placeholder="Add personal notes, review, or thoughts..."
-                  />
-                </Field>
-
-                <Field>
-                  <FieldLabel>RYM Link</FieldLabel>
-                  <Input
-                    {...form.register("rymLink")}
-                    placeholder="https://rateyourmusic.com/..."
-                    className="font-mono text-xs"
-                  />
-                </Field>
-              </div>
+              <AlbumFormDetails form={form} />
             </div>
 
             {/* Footer Actions */}
