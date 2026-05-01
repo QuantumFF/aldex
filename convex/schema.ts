@@ -6,6 +6,8 @@ export default defineSchema({
   albums: defineTable({
     title: v.string(),
     artist: v.string(),
+    normalizedTitle: v.string(),
+    normalizedArtist: v.string(),
     releaseYear: v.optional(v.number()),
     coverImageId: v.optional(v.id("_storage")),
     coverUrl: v.optional(v.string()),
@@ -13,8 +15,7 @@ export default defineSchema({
     genres: v.optional(v.array(v.string())),
   })
     .index("by_musicBrainzId", ["musicBrainzId"])
-    .index("by_artist", ["artist"])
-    .index("by_title", ["title"]),
+    .index("by_normalized_artist_and_title", ["normalizedArtist", "normalizedTitle"]),
 
   // User Library Entries (User-Specific Data)
   user_albums: defineTable({

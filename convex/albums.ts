@@ -130,6 +130,8 @@ export const create = mutation({
 
     const cleanTitle = args.title.trim();
     const cleanArtist = args.artist.trim();
+    const normalizedTitle = cleanTitle.toLowerCase();
+    const normalizedArtist = cleanArtist.toLowerCase();
 
     // Try finding by MusicBrainz ID first
     if (args.musicBrainzId) {
@@ -147,29 +149,12 @@ export const create = mutation({
 
     // Fallback: Try finding by Title + Artist
     if (!globalAlbumId) {
-      // Strategy 1: Query by Artist (Exact), Match Title (Case-Insensitive)
-      // This handles cases where Artist is correct but Title casing differs.
-      const artistAlbums = await ctx.db
+      const match = await ctx.db
         .query("albums")
-        .withIndex("by_artist", (q) => q.eq("artist", cleanArtist))
-        .collect();
-
-      let match = artistAlbums.find(
-        (a) => a.title.toLowerCase() === cleanTitle.toLowerCase(),
-      );
-
-      // Strategy 2: Query by Title (Exact), Match Artist (Case-Insensitive)
-      // This handles cases where Title is correct but Artist casing differs.
-      if (!match) {
-        const titleAlbums = await ctx.db
-          .query("albums")
-          .withIndex("by_title", (q) => q.eq("title", cleanTitle))
-          .collect();
-
-        match = titleAlbums.find(
-          (a) => a.artist.toLowerCase() === cleanArtist.toLowerCase(),
-        );
-      }
+        .withIndex("by_normalized_artist_and_title", (q) =>
+          q.eq("normalizedArtist", normalizedArtist).eq("normalizedTitle", normalizedTitle),
+        )
+        .first();
 
       if (match) {
         globalAlbumId = match._id;
@@ -182,6 +167,8 @@ export const create = mutation({
       globalAlbumId = await ctx.db.insert("albums", {
         title: cleanTitle,
         artist: cleanArtist,
+        normalizedTitle,
+        normalizedArtist,
         releaseYear: args.releaseYear,
         coverImageId: args.coverImageId,
         coverUrl: args.coverUrl,
