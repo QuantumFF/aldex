@@ -3,7 +3,7 @@ import { LandingPage } from "@/components/landing-page";
 import { LoadingScreen } from "@/components/loading-screen";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { UserButton } from "@clerk/clerk-react";
+import { CustomUserButton } from "@/components/auth/custom-user-button";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
@@ -30,7 +30,7 @@ export function App() {
         <Authenticated>
           <div className="flex flex-1 flex-col gap-4 p-8">
             <AlbumLibrary>
-              <UserButton />
+              <CustomUserButton />
             </AlbumLibrary>
           </div>
         </Authenticated>
