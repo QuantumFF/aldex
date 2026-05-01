@@ -34,6 +34,10 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
     handleBatchApply,
     handleSelectAll,
     deleteAlbum,
+    sortBy,
+    setSortBy,
+    sortOrder,
+    setSortOrder,
   } = useAlbumLibrary();
 
   const getTitle = () => {
@@ -57,7 +61,7 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
         {isBatchMode ? (
           <BatchActions
             selectedCount={selectedAlbumIds.size}
-            selectedAlbums={filteredAlbums.filter((a) =>
+            selectedAlbums={filteredAlbums.filter((a: any) =>
               selectedAlbumIds.has(a._id),
             )}
             onSelectAll={handleSelectAll}
@@ -83,6 +87,10 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
             setColumnCount={setColumnCount}
             isBatchMode={isBatchMode}
             toggleBatchMode={toggleBatchMode}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
           >
             {children}
           </AlbumFilters>

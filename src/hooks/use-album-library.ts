@@ -48,12 +48,36 @@ export function useAlbumLibrary() {
   const [searchQuery, setSearchQuery] = useState("");
   const [acquisitionFilter, setAcquisitionFilter] = useState<string>("all");
   const [progressFilter, setProgressFilter] = useState<string>("all");
+  const [sortBy, setSortByState] = useState<"dateAdded" | "title" | "artist" | "year">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("aldex_sortBy");
+      if (saved) return saved as "dateAdded" | "title" | "artist" | "year";
+    }
+    return "title";
+  });
+  const [sortOrder, setSortOrderState] = useState<"asc" | "desc">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("aldex_sortOrder");
+      if (saved) return saved as "asc" | "desc";
+    }
+    return "desc";
+  });
+
+  const setSortBy = (val: "dateAdded" | "title" | "artist" | "year") => {
+    if (typeof window !== "undefined") localStorage.setItem("aldex_sortBy", val);
+    setSortByState(val);
+  };
+
+  const setSortOrder = (val: "asc" | "desc") => {
+    if (typeof window !== "undefined") localStorage.setItem("aldex_sortOrder", val);
+    setSortOrderState(val);
+  };
 
   // Client-side filtering logic
   const filteredAlbums = useMemo(() => {
     if (!allAlbums) return [];
 
-    return allAlbums.filter((album) => {
+    const filtered = allAlbums.filter((album) => {
       // 1. Text Search
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -88,7 +112,36 @@ export function useAlbumLibrary() {
 
       return true;
     });
-  }, [allAlbums, searchQuery, acquisitionFilter, progressFilter]);
+
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      switch (sortBy) {
+        case "title":
+          comparison = (a.title || "").localeCompare(b.title || "");
+          break;
+        case "artist":
+          comparison = (a.artist || "").localeCompare(b.artist || "");
+          break;
+        case "year":
+          comparison = (a.releaseYear || 0) - (b.releaseYear || 0);
+          break;
+        case "dateAdded":
+        default:
+          comparison = (a.addedAt || 0) - (b.addedAt || 0);
+          break;
+      }
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+
+    return filtered;
+  }, [
+    allAlbums,
+    searchQuery,
+    acquisitionFilter,
+    progressFilter,
+    sortBy,
+    sortOrder,
+  ]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -266,6 +319,10 @@ export function useAlbumLibrary() {
     setAcquisitionFilter,
     progressFilter,
     setProgressFilter,
+    sortBy,
+    setSortBy,
+    sortOrder,
+    setSortOrder,
     clearFilters,
     handleEditAlbum,
     toggleSelection,

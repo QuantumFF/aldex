@@ -32,11 +32,10 @@ export function AlbumGrid({
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
     >
-      {albums.map((album, index) => (
+      {albums.map((album) => (
         <div 
           key={album._id} 
-          className="relative group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
-          style={{ animationDelay: `${index * 50}ms` }}
+          className="relative group animate-in fade-in slide-in-from-bottom-4 duration-500"
         >
           <AlbumContextMenu
             album={album}
