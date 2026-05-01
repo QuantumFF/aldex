@@ -32,8 +32,12 @@ export function AlbumGrid({
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
     >
-      {albums.map((album) => (
-        <div key={album._id} className="relative group">
+      {albums.map((album, index) => (
+        <div 
+          key={album._id} 
+          className="relative group animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
           <AlbumContextMenu
             album={album}
             onEdit={(a) => onAlbumClick(a, {} as React.MouseEvent)}
@@ -42,11 +46,11 @@ export function AlbumGrid({
             isSelected={selectedAlbumIds.has(album._id)}
           >
             <Card
-              className={`overflow-hidden p-0 cursor-pointer transition-all ${
+              className={`overflow-hidden p-0 cursor-pointer transition-all duration-300 ${
                 isBatchMode && selectedAlbumIds.has(album._id)
-                  ? "ring-2 ring-primary"
-                  : "hover:ring-2 hover:ring-primary/50"
-              } ${isBatchMode ? "select-none" : ""}`}
+                  ? "ring-2 ring-primary scale-[0.98] shadow-inner"
+                  : "hover:shadow-lg hover:-translate-y-1 hover:ring-1 hover:ring-border"
+              } ${isBatchMode ? "select-none" : "border-transparent bg-transparent hover:bg-card"}`}
               onClick={(e) => onAlbumClick(album, e)}
             >
               <CardContent className="p-0">
@@ -66,9 +70,9 @@ export function AlbumGrid({
                     </div>
                   )}
                   {!isBatchMode && album.rating && (
-                    <div className="absolute top-2 left-2">
-                      <Badge variant="secondary" className="font-bold">
-                        {album.rating}/10
+                    <div className="absolute top-2 left-2 z-10">
+                      <Badge variant="secondary" className="font-serif font-bold text-sm bg-background/80 backdrop-blur-sm border-none shadow-sm">
+                        {album.rating}
                       </Badge>
                     </div>
                   )}
@@ -109,10 +113,10 @@ export function AlbumGrid({
                   )}
                 </div>
                 <div className="p-3 space-y-1">
-                  <h3 className="line-clamp-1 text-sm font-semibold leading-tight">
+                  <h3 className="line-clamp-1 text-base font-semibold tracking-tight leading-tight">
                     {album.title}
                   </h3>
-                  <p className="line-clamp-1 text-muted-foreground text-xs">
+                  <p className="line-clamp-1 text-muted-foreground text-xs font-sans font-light tracking-wide uppercase">
                     {album.artist}
                   </p>
                 </div>

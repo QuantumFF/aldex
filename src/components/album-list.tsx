@@ -59,7 +59,7 @@ export function AlbumList({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {albums.map((album) => (
+          {albums.map((album, index) => (
             <AlbumContextMenu
               key={album._id}
               album={album}
@@ -69,11 +69,12 @@ export function AlbumList({
               isSelected={selectedAlbumIds.has(album._id)}
             >
               <TableRow
-                className={`cursor-pointer hover:bg-muted/50 ${
+                className={`cursor-pointer transition-colors duration-300 hover:bg-muted/50 animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both ${
                   isBatchMode && selectedAlbumIds.has(album._id)
                     ? "bg-muted"
                     : ""
                 } ${isBatchMode ? "select-none" : ""}`}
+                style={{ animationDelay: `${index * 30}ms` }}
                 onClick={(e) => onAlbumClick(album, e)}
               >
                 {isBatchMode && (

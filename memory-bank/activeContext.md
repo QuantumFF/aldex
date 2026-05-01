@@ -3,10 +3,18 @@
 ## Current Focus
 
 - Completed redesign of the Edit Album Dialog for a modern minimalist aesthetic.
-- Fixed issue where album cover URLs were not being persisted in the database.
-- Fixed redundant album art downloads and duplicate global albums caused by case sensitivity.
+- Enhanced the entire frontend UI/UX with a bold "Editorial / Refined Minimalist" aesthetic using `Instrument Serif`.
+- Integrated Clerk authentication with the Shadcn theme.
+- Added staggered entrance animations to grid and list views.
 
 ## Recent Changes
+
+- **Frontend UI/UX Enhancements:**
+  - Integrated `@fontsource/instrument-serif` for striking headings, creating an editorial feel.
+  - Redesigned the Landing Page (`landing-page.tsx`) with a bold hero section, grid background pattern, and refined typography.
+  - Improved album card UX (`album-grid.tsx`) with smoother hover states (shadows, slight lifts) and better typographic hierarchy between Title and Artist.
+  - Added staggered entrance animations (`tw-animate-css` fade-in and slide-in) to both grid and list views for a more delightful loading experience.
+  - Updated Clerk `UserButton` and `SignInButton` to use the Shadcn theme via `@clerk/themes/shadcn.css` to match the rest of the application.
 
 - **Redundant Download Fix:**
   - **Global Album Matching:** Improved the search logic in `convex/albums.ts` to handle case-insensitive Artist names. It now falls back to searching by Title (exact) and matching Artist (case-insensitive) if the primary search fails. This prevents duplicate global albums (e.g., "The Beatles" vs "the beatles").

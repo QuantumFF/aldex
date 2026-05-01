@@ -1,6 +1,7 @@
 "use client";
 
 import { AddAlbumForm } from "@/components/add-album-form";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
@@ -145,9 +146,9 @@ export function AddAlbumCommand() {
           });
         },
         {
-          loading: "Album added! Fetching cover art... (Keep browser open)",
-          success: "Cover art updated successfully",
-          error: "Album added, but failed to fetch cover art",
+          loading: "Album added! Fetching high-res cover art... Please keep this window open.",
+          success: "Cover art fetched and saved successfully!",
+          error: "Album added, but we couldn't find high-res cover art.",
         },
       );
     } catch (error) {
@@ -220,49 +221,50 @@ export function AddAlbumCommand() {
       </CommandDialog>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Album</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-[425px] overflow-hidden p-0 border-border/50 shadow-2xl bg-background rounded-xl">
           {selectedAlbum && (
-            <div className="grid gap-4 py-4">
-              <div className="flex items-start gap-4">
-                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
-                  {loadingCover ? (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : coverUrl ? (
-                    <img
-                      src={coverUrl}
-                      alt={selectedAlbum.title}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <Disc className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <div className="grid gap-1">
-                  <h3 className="font-semibold leading-none tracking-tight">
-                    {selectedAlbum.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedAlbum["artist-credit"]?.[0]?.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedAlbum["first-release-date"]?.split("-")[0]}
-                  </p>
-                </div>
+            <div className="relative flex flex-col">
+              {/* Dramatic Header with Cover Art */}
+              <div className="relative h-56 w-full bg-muted/30">
+                {loadingCover ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-md z-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : coverUrl ? (
+                  <img
+                    src={coverUrl}
+                    alt={selectedAlbum.title}
+                    className="h-full w-full object-cover scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-muted/20">
+                    <Disc className="h-16 w-16 text-muted-foreground/30" />
+                  </div>
+                )}
+                {/* Gradient overlay to seamlessly blend into background */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+              </div>
+
+              {/* Text Content pulled up over the gradient */}
+              <div className="relative z-20 px-6 pb-6 pt-0 text-center -mt-16 space-y-2">
+                <Badge variant="secondary" className="mb-2 shadow-sm uppercase tracking-widest text-[10px] font-sans">
+                  {selectedAlbum["first-release-date"]?.split("-")[0] || "Unknown Year"}
+                </Badge>
+                <h3 className="text-3xl font-serif font-bold tracking-tight leading-none drop-shadow-sm">
+                  {selectedAlbum.title}
+                </h3>
+                <p className="text-sm font-sans font-medium text-muted-foreground uppercase tracking-wider">
+                  {selectedAlbum["artist-credit"]?.[0]?.name}
+                </p>
               </div>
             </div>
           )}
-          <DialogFooter className="flex-col gap-2 sm:flex-col">
-            <div className="flex gap-2 w-full">
+          <DialogFooter className="px-6 pb-6 pt-2 flex-col gap-3 sm:flex-col border-t border-border/10">
+            <div className="grid grid-cols-2 gap-3 w-full">
               <Button
                 ref={addToLibraryButtonRef}
-                className="flex-1"
+                size="lg"
+                className="w-full font-semibold shadow-md"
                 onClick={() => handleAdd("library")}
                 disabled={adding}
               >
@@ -273,27 +275,28 @@ export function AddAlbumCommand() {
               </Button>
               <Button
                 variant="secondary"
-                className="flex-1"
+                size="lg"
+                className="w-full font-medium shadow-sm"
                 onClick={() => handleAdd("wishlist")}
                 disabled={adding}
               >
                 Add to Wishlist
               </Button>
             </div>
-            <div className="flex gap-2 w-full">
+            <div className="grid grid-cols-2 gap-3 w-full">
               <Button
                 variant="outline"
-                className="flex-1"
+                className="w-full"
                 onClick={() => {
                   setConfirmOpen(false);
                   setEditOpen(true);
                 }}
               >
-                Edit Details
+                Edit Details First
               </Button>
               <Button
                 variant="ghost"
-                className="flex-1"
+                className="w-full"
                 onClick={() => setConfirmOpen(false)}
               >
                 Cancel

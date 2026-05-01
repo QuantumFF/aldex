@@ -14,6 +14,7 @@
 - [x] Theme Support (Dark/Light mode)
 - [x] Cover URL Persistence (Backend & Frontend support)
 - [x] Redundant Download Fix (Case-insensitive matching, Smart actions)
+- [x] Frontend UI/UX Enhancements (Editorial typography, staggered animations, Shadcn Clerk theme)
 - [x] Backend Performance Optimization (Normalized search fields, removed JS filtering)
 
 ## In Progress
