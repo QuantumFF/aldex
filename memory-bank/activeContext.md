@@ -13,6 +13,11 @@
   - **Smart Downloads:** Updated `convex/albums.ts` to only trigger a backend download if a _new_ global album is created.
   - **Action Optimization:** Updated `convex/images.ts` (`storeCoverArt`) to check if the album already has a cover (via a new internal query `getAlbumCoverStatus`) before downloading. This prevents frontend-triggered redundant downloads.
 
+- **Backend Performance Optimization:**
+  - Added `normalizedTitle` and `normalizedArtist` fields to the `albums` schema with a compound index `by_normalized_artist_and_title`.
+  - Updated the `create` mutation to use this index for duplicate matching, replacing inefficient JavaScript filtering and `.collect()` calls.
+  - Removed redundant single-field indexes to reduce write overhead.
+
 - **Edit Album Dialog Redesign:**
   - Implemented a split-layout design with a prominent cover image preview on the left and a clean form on the right.
   - Improved typography and visual hierarchy for Title and Artist fields.
