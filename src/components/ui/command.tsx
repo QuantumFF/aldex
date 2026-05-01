@@ -34,7 +34,7 @@ const CommandDialog = ({
 }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-2xl max-w-2xl top-[15%] translate-y-0 bg-background/60 dark:bg-black/40 backdrop-blur-xl border-white/10">
+      <DialogContent className="overflow-hidden p-0 shadow-2xl max-w-2xl mx-3 sm:mx-auto top-[15%] translate-y-0 bg-background/60 dark:bg-black/40 backdrop-blur-xl border-white/10 rounded-xl w-[calc(100%-1.5rem)] sm:w-full">
         <Command
           className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 bg-transparent"
           {...commandProps}

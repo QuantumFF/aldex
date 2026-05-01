@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DeleteAlbumDialog } from "@/components/delete-album-dialog";
 import type { UserAlbum } from "@/lib/types";
 import { Trash2, X } from "lucide-react";
 import { useState } from "react";
@@ -171,16 +172,20 @@ export function BatchActions({
 
       <div className="h-6 w-px bg-border mx-2" />
 
-      <Button
-        variant="destructive"
-        size="icon"
-        className="h-9 w-9"
-        onClick={onDelete}
-        disabled={selectedCount === 0}
-        title="Delete Selected"
+      <DeleteAlbumDialog
+        albumTitle={selectedCount === 1 ? selectedAlbums[0]?.title : undefined}
+        onConfirm={onDelete}
       >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+        <Button
+          variant="destructive"
+          size="icon"
+          className="h-9 w-9"
+          disabled={selectedCount === 0}
+          title="Delete Selected"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </DeleteAlbumDialog>
 
       <Button variant="ghost" size="sm" className="h-9" onClick={onCancel}>
         <X className="mr-2 h-4 w-4" />

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/command";
 import { AlbumSearchCommand } from "./album-search-command";
 import { useAlbumSearch } from "@/hooks/use-album-search";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   getAlbumCover,
   type MusicBrainzReleaseGroup,
@@ -165,50 +165,70 @@ export function AddAlbumCommand() {
       </CommandDialog>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-[425px] overflow-hidden p-0 border-border/50 shadow-2xl bg-background rounded-xl">
+        <DialogContent className="max-w-[min(425px,calc(100vw-2rem))] overflow-hidden p-0 border-border/50 shadow-2xl bg-background rounded-xl max-h-[90svh] flex flex-col">
           {selectedAlbum && (
-            <div className="relative flex flex-col">
-              {/* Dramatic Header with Cover Art */}
-              <div className="relative h-56 w-full bg-muted/30">
-                {loadingCover ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-md z-10">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  </div>
-                ) : coverUrl ? (
-                  <img
-                    src={coverUrl}
-                    alt={selectedAlbum.title}
-                    className="h-full w-full object-cover scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-muted/20">
-                    <Disc className="h-16 w-16 text-muted-foreground/30" />
-                  </div>
-                )}
-                {/* Gradient overlay to seamlessly blend into background */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            <>
+              {/* ── Mobile: compact card layout (no gradient artifacts) ── */}
+              <div className="flex sm:hidden items-center gap-4 p-4 border-b border-border/10 shrink-0">
+                <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted shrink-0">
+                  {loadingCover ? (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : coverUrl ? (
+                    <img src={coverUrl} alt={selectedAlbum.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-muted/50">
+                      <Disc className="h-8 w-8 text-muted-foreground/30" />
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <Badge variant="secondary" className="mb-1 text-[10px] uppercase tracking-widest">
+                    {selectedAlbum["first-release-date"]?.split("-")[0] || "Unknown"}
+                  </Badge>
+                  <h3 className="font-bold text-lg leading-tight line-clamp-2">
+                    {selectedAlbum.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {selectedAlbum["artist-credit"]?.[0]?.name}
+                  </p>
+                </div>
               </div>
 
-              {/* Text Content pulled up over the gradient */}
-              <div className="relative z-20 px-6 pb-6 pt-0 text-center -mt-16 space-y-2">
-                <Badge
-                  variant="secondary"
-                  className="mb-2 shadow-sm uppercase tracking-widest text-[10px] font-sans"
-                >
-                  {selectedAlbum["first-release-date"]?.split("-")[0] ||
-                    "Unknown Year"}
-                </Badge>
-                <h3 className="text-3xl font-serif font-bold tracking-tight leading-none drop-shadow-sm">
-                  {selectedAlbum.title}
-                </h3>
-                <p className="text-sm font-sans font-medium text-muted-foreground uppercase tracking-wider">
-                  {selectedAlbum["artist-credit"]?.[0]?.name}
-                </p>
+              {/* ── Desktop (sm+): dramatic full-bleed hero ── */}
+              <div className="hidden sm:block relative">
+                <div className="relative h-56 w-full bg-muted/30 overflow-hidden">
+                  {loadingCover ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-md z-10">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : coverUrl ? (
+                    <img src={coverUrl} alt={selectedAlbum.title} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-muted/20">
+                      <Disc className="h-16 w-16 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+                </div>
+                <div className="relative z-20 px-6 pb-6 pt-0 text-center -mt-16 space-y-2">
+                  <Badge variant="secondary" className="mb-2 shadow-sm uppercase tracking-widest text-[10px] font-sans">
+                    {selectedAlbum["first-release-date"]?.split("-")[0] || "Unknown Year"}
+                  </Badge>
+                  <h3 className="text-3xl font-serif font-bold tracking-tight leading-none drop-shadow-sm">
+                    {selectedAlbum.title}
+                  </h3>
+                  <p className="text-sm font-sans font-medium text-muted-foreground uppercase tracking-wider">
+                    {selectedAlbum["artist-credit"]?.[0]?.name}
+                  </p>
+                </div>
               </div>
-            </div>
+            </>
           )}
-          <DialogFooter className="px-6 pb-6 pt-2 flex-col gap-3 sm:flex-col border-t border-border/10">
-            <div className="grid grid-cols-2 gap-3 w-full">
+
+          <div className="flex flex-col gap-2 px-4 pb-4 pt-3 border-t border-border/10">
+            <div className="grid grid-cols-2 gap-2 w-full">
               <Button
                 ref={addToLibraryButtonRef}
                 size="lg"
@@ -216,9 +236,7 @@ export function AddAlbumCommand() {
                 onClick={() => handleAdd("library")}
                 disabled={adding}
               >
-                {adding ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
+                {adding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Add to Library
               </Button>
               <Button
@@ -231,14 +249,11 @@ export function AddAlbumCommand() {
                 Add to Wishlist
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-3 w-full">
+            <div className="grid grid-cols-2 gap-2 w-full">
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={() => {
-                  setConfirmOpen(false);
-                  setEditOpen(true);
-                }}
+                onClick={() => { setConfirmOpen(false); setEditOpen(true); }}
               >
                 Edit Details First
               </Button>
@@ -250,7 +265,7 @@ export function AddAlbumCommand() {
                 Cancel
               </Button>
             </div>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -200,7 +200,7 @@ export function BulkAddAlbumsDialog() {
           <ListPlus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Bulk Add Albums</DialogTitle>
           <DialogDescription>

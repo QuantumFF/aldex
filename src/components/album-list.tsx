@@ -19,6 +19,7 @@ interface AlbumListProps {
   selectedAlbumIds: Set<string>;
   onAlbumClick: (album: UserAlbum, e: React.MouseEvent) => void;
   onToggleSelection: (id: string) => void;
+  onSelectFromMenu: (id: string) => void;
   onSelectAll: () => void;
   onDelete: (id: string) => void;
 }
@@ -29,6 +30,7 @@ export function AlbumList({
   selectedAlbumIds,
   onAlbumClick,
   onToggleSelection,
+  onSelectFromMenu,
   onSelectAll,
   onDelete,
 }: AlbumListProps) {
@@ -67,6 +69,7 @@ export function AlbumList({
               onEdit={(a) => onAlbumClick(a, {} as React.MouseEvent)}
               onDelete={onDelete}
               onToggleSelection={onToggleSelection}
+              onSelectFromMenu={onSelectFromMenu}
               isSelected={selectedAlbumIds.has(album._id)}
             >
               <motion.tr
@@ -126,6 +129,7 @@ export function AlbumList({
                       onEdit={(a) => onAlbumClick(a, {} as React.MouseEvent)}
                       onDelete={onDelete}
                       onToggleSelection={onToggleSelection}
+                      onSelectFromMenu={onSelectFromMenu}
                       isSelected={selectedAlbumIds.has(album._id)}
                     />
                   )}

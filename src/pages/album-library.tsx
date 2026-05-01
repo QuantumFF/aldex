@@ -41,6 +41,12 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
     setSortOrder,
   } = useAlbumLibrary();
 
+  // Context/dropdown menu "Select" — enters batch mode first if not already in it
+  const handleSelectFromMenu = (id: string) => {
+    if (!isBatchMode) toggleBatchMode();
+    toggleSelection(id);
+  };
+
   const getTitle = () => {
     if (
       searchQuery ||
@@ -145,6 +151,7 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
               selectedAlbumIds={selectedAlbumIds}
               onAlbumClick={handleEditAlbum}
               onToggleSelection={toggleSelection}
+              onSelectFromMenu={handleSelectFromMenu}
               onDelete={deleteAlbum}
             />
           </motion.div>
@@ -156,6 +163,7 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
               selectedAlbumIds={selectedAlbumIds}
               onAlbumClick={handleEditAlbum}
               onToggleSelection={toggleSelection}
+              onSelectFromMenu={handleSelectFromMenu}
               onSelectAll={handleSelectAll}
               onDelete={deleteAlbum}
             />

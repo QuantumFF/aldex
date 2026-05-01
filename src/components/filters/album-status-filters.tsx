@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface AlbumStatusFiltersProps {
   acquisitionFilter: string;
@@ -70,7 +70,7 @@ export function AlbumStatusFilters({
                 Active
               </ToggleGroupItem>
               <ToggleGroupItem value="completed" className="h-7 px-3 text-xs">
-                Done
+                Completed
               </ToggleGroupItem>
             </ToggleGroup>
           </motion.div>

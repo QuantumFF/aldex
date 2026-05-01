@@ -32,6 +32,7 @@ interface AlbumGridProps {
   selectedAlbumIds: Set<string>;
   onAlbumClick: (album: UserAlbum, e: React.MouseEvent) => void;
   onToggleSelection: (id: string) => void;
+  onSelectFromMenu: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -42,6 +43,7 @@ export function AlbumGrid({
   selectedAlbumIds,
   onAlbumClick,
   onToggleSelection,
+  onSelectFromMenu,
   onDelete,
 }: AlbumGridProps) {
   return (
@@ -68,6 +70,7 @@ export function AlbumGrid({
             onEdit={(a) => onAlbumClick(a, {} as React.MouseEvent)}
             onDelete={onDelete}
             onToggleSelection={onToggleSelection}
+            onSelectFromMenu={onSelectFromMenu}
             isSelected={selectedAlbumIds.has(album._id)}
           >
             <Card
@@ -157,6 +160,7 @@ export function AlbumGrid({
                   onEdit={(a) => onAlbumClick(a, {} as React.MouseEvent)}
                   onDelete={onDelete}
                   onToggleSelection={onToggleSelection}
+                  onSelectFromMenu={onSelectFromMenu}
                   isSelected={selectedAlbumIds.has(album._id)}
                   className="h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
                 />

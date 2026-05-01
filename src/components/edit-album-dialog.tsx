@@ -9,17 +9,7 @@ import { useForm } from "react-hook-form";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { DeleteAlbumDialog } from "@/components/delete-album-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +18,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Disc, ImagePlus, Loader2, Trash2 } from "lucide-react";
+import { Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { AlbumFormDetails, AlbumFormSidebar } from "./shared-album-form-fields";
 
@@ -192,9 +185,45 @@ export function EditAlbumDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[850px] p-0 gap-0 overflow-hidden flex flex-col md:flex-row max-h-[90vh] md:h-[600px]">
-        {/* Left Column: Visuals */}
-        <div className="w-full md:w-[320px] bg-muted/30 border-b md:border-b-0 md:border-r flex flex-col p-6 gap-6 shrink-0 md:overflow-y-auto">
+      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[850px] p-0 gap-0 overflow-hidden flex flex-col md:flex-row max-h-[90svh] md:h-[600px]">
+        {/* Mobile: full-width cover banner + URL/archived controls below */}
+        <div className="flex md:hidden flex-col bg-muted/30 border-b shrink-0">
+          {/* Cover art banner */}
+          <div className="relative h-36 w-full overflow-hidden bg-muted/50">
+            {displayImage ? (
+              <img src={displayImage} alt="Cover" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Disc className="w-10 h-10 opacity-20" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
+          </div>
+          {/* Cover URL + Archived */}
+          <div className="flex items-center gap-3 px-4 py-2">
+            <div className="relative flex-1 min-w-0">
+              <ImagePlus className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                {...form.register("coverUrl")}
+                placeholder="Paste image URL..."
+                className="pl-8 text-xs h-8 bg-background"
+              />
+            </div>
+            <label className="flex items-center gap-1.5 shrink-0 cursor-pointer">
+              <Controller
+                control={form.control}
+                name="isArchived"
+                render={({ field }) => (
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+              <span className="text-xs text-muted-foreground">Archived</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Desktop: full sidebar column */}
+        <div className="hidden md:flex md:w-[320px] bg-muted/30 border-r flex-col p-6 gap-6 shrink-0 overflow-y-auto">
           <AlbumFormSidebar form={form} coverPreviewUrl={displayImage} />
         </div>
 
@@ -218,44 +247,9 @@ export function EditAlbumDialog({
             </div>
 
             {/* Footer Actions */}
-            <div className="p-4 border-t bg-muted/10 flex justify-between items-center shrink-0">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    type="button"
-                    disabled={isDeleting}
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Album</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete "{album?.title}"? This
-                      action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDelete}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      {isDeleting ? (
-                        <Loader2 className="animate-spin mr-2" />
-                      ) : null}
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
-              <div className="flex gap-3">
+            <div className="p-4 border-t bg-muted/10 shrink-0 flex flex-col gap-2 md:flex-row md:justify-between md:items-center md:gap-0">
+              {/* Mobile: primary actions first */}
+              <div className="grid grid-cols-2 gap-2 md:hidden">
                 <Button
                   variant="outline"
                   type="button"
@@ -264,9 +258,40 @@ export function EditAlbumDialog({
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <Loader2 className="animate-spin mr-2" />
-                  ) : null}
+                  {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
+                  Save Changes
+                </Button>
+              </div>
+
+              {/* Desktop: Delete on left */}
+              <DeleteAlbumDialog
+                albumTitle={album?.title}
+                onConfirm={handleDelete}
+                isDeleting={isDeleting}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  disabled={isDeleting}
+                  className="text-muted-foreground hover:text-destructive w-full md:w-auto justify-center md:justify-start"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
+              </DeleteAlbumDialog>
+
+              {/* Desktop: Cancel + Save on right */}
+              <div className="hidden md:flex gap-3">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
                   Save Changes
                 </Button>
               </div>
