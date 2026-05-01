@@ -2,9 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-} from "@/components/ui/command";
+import { Command } from "@/components/ui/command";
 import { AlbumSearchCommand } from "./album-search-command";
 import { useAlbumSearch } from "@/hooks/use-album-search";
 import {
@@ -15,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   getAlbumCover,
@@ -24,6 +22,7 @@ import {
 } from "@/lib/musicbrainz";
 import { generateRymLink } from "@/lib/utils";
 import { useAction, useMutation } from "convex/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ListPlus, Loader2, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -45,6 +44,19 @@ export function BulkAddAlbumsDialog() {
   // Processing State
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [progress, setProgress] = React.useState({ current: 0, total: 0 });
+
+  // Height animation: ResizeObserver tracks the inner content div's real pixel height
+  // so we can animate the outer container explicitly instead of relying on layout
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = React.useState<number | undefined>(undefined);
+  React.useEffect(() => {
+    if (!contentRef.current) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setContentHeight(entry.contentRect.height);
+    });
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const createAlbum = useMutation(api.albums.create);
   const storeCoverArt = useAction(api.images.storeCoverArt);
@@ -210,68 +222,112 @@ export function BulkAddAlbumsDialog() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="text" className="mt-4">
-            <div className="flex flex-col gap-4">
-              <Textarea
-                placeholder={`The Beatles - Abbey Road\nPink Floyd - Dark Side of the Moon\n...`}
-                className="min-h-[250px] resize-y font-mono text-sm"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                disabled={isProcessing}
-              />
-            </div>
-          </TabsContent>
+          {/* Outer container animates to exact pixel height reported by ResizeObserver */}
+          <motion.div
+            className="mt-4 overflow-hidden"
+            animate={{ height: contentHeight ?? "auto" }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] }}
+          >
+            {/* Inner div — measured by ResizeObserver */}
+            <div ref={contentRef}>
+            <AnimatePresence mode="wait" initial={false}>
+              {activeTab === "text" ? (
+                <motion.div
+                  key="text"
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -12 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                >
+                  <Textarea
+                    placeholder={`The Beatles - Abbey Road\nPink Floyd - Dark Side of the Moon\n...`}
+                    className="min-h-[250px] resize-y font-mono text-sm"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    disabled={isProcessing}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="search"
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 12 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  className="flex flex-col gap-4"
+                >
+                  <Command
+                    className="border rounded-md overflow-hidden"
+                    shouldFilter={false}
+                  >
+                    <AlbumSearchCommand
+                      query={searchQuery}
+                      onQueryChange={setSearchQuery}
+                      loading={isSearching}
+                      results={searchResults}
+                      onSelect={toggleStagedAlbum}
+                      selectedIds={stagedAlbums.map((a) => a.id)}
+                      disabled={isProcessing}
+                      placeholder="Search albums to add..."
+                      listClassName="max-h-[200px]"
+                    />
+                  </Command>
 
-          <TabsContent value="search" className="mt-4">
-            <div className="flex flex-col gap-4">
-              <Command
-                className="border rounded-md overflow-hidden"
-                shouldFilter={false}
-              >
-                <AlbumSearchCommand
-                  query={searchQuery}
-                  onQueryChange={setSearchQuery}
-                  loading={isSearching}
-                  results={searchResults}
-                  onSelect={toggleStagedAlbum}
-                  selectedIds={stagedAlbums.map((a) => a.id)}
-                  disabled={isProcessing}
-                  placeholder="Search albums to add..."
-                  listClassName="max-h-[200px]"
-                />
-              </Command>
-
-              {stagedAlbums.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-sm font-medium">
-                    Selected ({stagedAlbums.length})
-                  </div>
-                  <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto p-1">
-                    {stagedAlbums.map((album) => (
-                      <Badge
-                        key={album.id}
-                        variant="secondary"
-                        className="flex items-center gap-1 pr-1"
+                  {/* Staged albums — layout-animated so the dialog grows smoothly */}
+                  <AnimatePresence initial={false}>
+                    {stagedAlbums.length > 0 && (
+                      <motion.div
+                        key="staged"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.22, ease: "easeInOut" }}
+                        className="overflow-hidden"
                       >
-                        <span className="truncate max-w-[150px]">
-                          {album.title}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-4 w-4 ml-1 hover:bg-transparent text-muted-foreground hover:text-foreground"
-                          onClick={() => removeStagedAlbum(album.id)}
-                          disabled={isProcessing}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                        <div className="flex flex-col gap-2">
+                          <div className="text-sm font-medium">
+                            Selected ({stagedAlbums.length})
+                          </div>
+                          <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto p-1">
+                            <AnimatePresence initial={false}>
+                              {stagedAlbums.map((album) => (
+                                <motion.div
+                                  key={album.id}
+                                  initial={{ opacity: 0, scale: 0.85 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={{ opacity: 0, scale: 0.85 }}
+                                  transition={{ duration: 0.15 }}
+                                >
+                                  <Badge
+                                    variant="secondary"
+                                    className="flex items-center gap-1 pr-1"
+                                  >
+                                    <span className="truncate max-w-[150px]">
+                                      {album.title}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-4 w-4 ml-1 hover:bg-transparent text-muted-foreground hover:text-foreground"
+                                      onClick={() => removeStagedAlbum(album.id)}
+                                      disabled={isProcessing}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </Badge>
+                                </motion.div>
+                              ))}
+                            </AnimatePresence>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               )}
-            </div>
-          </TabsContent>
+            </AnimatePresence>
+            </div>{/* end contentRef */}
+          </motion.div>
         </Tabs>
 
         {isProcessing && (
