@@ -24,7 +24,6 @@ interface AlbumFiltersProps {
   setSortOrder: (order: "asc" | "desc") => void;
   isBatchMode: boolean;
   toggleBatchMode: () => void;
-  children?: React.ReactNode;
 }
 
 export function AlbumFilters({
@@ -44,7 +43,6 @@ export function AlbumFilters({
   setSortOrder,
   isBatchMode,
   toggleBatchMode,
-  children,
 }: AlbumFiltersProps) {
   return (
     <div className="flex flex-1 flex-wrap items-center gap-2 justify-end">
@@ -95,7 +93,6 @@ export function AlbumFilters({
 
         <AddAlbumCommand />
         <BulkAddAlbumsDialog />
-        {children}
       </div>
     </div>
   );

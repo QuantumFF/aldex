@@ -108,12 +108,17 @@ export function AlbumLibrary({ children }: { children?: React.ReactNode }) {
                 setSortBy={setSortBy}
                 sortOrder={sortOrder}
                 setSortOrder={setSortOrder}
-              >
-                {children}
-              </AlbumFilters>
+              />
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* User button — always pinned to the far right */}
+        {children && (
+          <div className="ml-auto shrink-0">
+            {children}
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
