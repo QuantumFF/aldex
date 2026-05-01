@@ -11,13 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   getAlbumCover,
   searchAlbums,
@@ -146,7 +140,8 @@ export function AddAlbumCommand() {
           });
         },
         {
-          loading: "Album added! Fetching high-res cover art... Please keep this window open.",
+          loading:
+            "Album added! Fetching high-res cover art... Please keep this window open.",
           success: "Cover art fetched and saved successfully!",
           error: "Album added, but we couldn't find high-res cover art.",
         },
@@ -247,8 +242,12 @@ export function AddAlbumCommand() {
 
               {/* Text Content pulled up over the gradient */}
               <div className="relative z-20 px-6 pb-6 pt-0 text-center -mt-16 space-y-2">
-                <Badge variant="secondary" className="mb-2 shadow-sm uppercase tracking-widest text-[10px] font-sans">
-                  {selectedAlbum["first-release-date"]?.split("-")[0] || "Unknown Year"}
+                <Badge
+                  variant="secondary"
+                  className="mb-2 shadow-sm uppercase tracking-widest text-[10px] font-sans"
+                >
+                  {selectedAlbum["first-release-date"]?.split("-")[0] ||
+                    "Unknown Year"}
                 </Badge>
                 <h3 className="text-3xl font-serif font-bold tracking-tight leading-none drop-shadow-sm">
                   {selectedAlbum.title}
