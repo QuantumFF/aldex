@@ -10,6 +10,7 @@ import {
   Search,
 } from "lucide-react";
 import { AddAlbumCommand } from "./add-album-command";
+import { BulkAddAlbumsDialog } from "./bulk-add-albums-dialog";
 
 interface AlbumFiltersProps {
   searchQuery: string;
@@ -96,7 +97,7 @@ export function AlbumFilters({
             Backlog
           </ToggleGroupItem>
           <ToggleGroupItem value="active" className="h-7 px-3 text-xs">
-            Active
+            Completed
           </ToggleGroupItem>
           <ToggleGroupItem value="completed" className="h-7 px-3 text-xs">
             Completed
@@ -171,6 +172,7 @@ export function AlbumFilters({
         </Button>
 
         <AddAlbumCommand />
+        <BulkAddAlbumsDialog />
         {children}
       </div>
     </div>

@@ -16,6 +16,7 @@
 - [x] Redundant Download Fix (Case-insensitive matching, Smart actions)
 - [x] Frontend UI/UX Enhancements (Editorial typography, staggered animations, Shadcn Clerk theme)
 - [x] Backend Performance Optimization (Normalized search fields, removed JS filtering)
+- [x] Bulk Add Albums (Import from textarea list)
 
 ## In Progress
 

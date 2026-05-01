@@ -9,6 +9,12 @@
 
 ## Recent Changes
 
+- **Bulk Add Albums Feature:**
+  - Implemented `BulkAddAlbumsDialog` with dual modes: Text List and Search & Select.
+  - Text List allows users to paste a list of albums (one per line).
+  - Search & Select allows users to search MusicBrainz, stage multiple albums, and bulk import them.
+  - Integrates with background cover art processing and added to the album filters bar.
+
 - **Frontend UI/UX Enhancements:**
   - Integrated `@fontsource/instrument-serif` for striking headings, creating an editorial feel.
   - Redesigned the Landing Page (`landing-page.tsx`) with a bold hero section, grid background pattern, and refined typography.
